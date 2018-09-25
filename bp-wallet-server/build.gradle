@@ -1,0 +1,20 @@
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter')
+	compile("net.devh:grpc-server-spring-boot-starter:${springBootGrpcVersion}")
+    compile project(':bp-wallet-proto')
+}
+
+buildscript {
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+bootJar {
+    baseName = 'bp-wallet-client'
+    version =  '0.1.0'
+    mainClassName = 'com.betpawa.wallet.client.BPWalletClientApplication'
+    
+}
