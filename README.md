@@ -9,3 +9,4 @@ Planned Features.
 * The Server will not expose Rest API's it will be called via ``` stub ``` 
 * Server will be Dockerized.
 * Server Will Have peresistance `mysql` running in its own ```docker``` container.
+* Client Rest API should return the Status of Excution and Stats like ``` QPS```, ``` Failed RPCs ``` , ``` Sucess RPCs```
