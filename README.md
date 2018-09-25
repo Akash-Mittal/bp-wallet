@@ -8,3 +8,4 @@ Planned Features.
 * The Server and Client are both based on Spring boot and uses grpc wrapper of spring boot that supports ``` GrpcClient ``` and ``` GrpcServer ``` annotations.
 * The Server will not expose Rest API's it will be called via ``` stub ``` 
 * Server will be Dockerized.
+* Server Will Have peresistance `mysql` running in its own ```docker``` container.
