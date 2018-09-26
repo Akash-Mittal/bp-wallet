@@ -1,4 +1,4 @@
-package com.bp.wallet.server.application;
+package com.bp.wallet.server.auto.entities.generated;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

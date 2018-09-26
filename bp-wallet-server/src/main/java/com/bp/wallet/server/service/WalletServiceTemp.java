@@ -5,22 +5,22 @@ import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.betpawa.wallet.CURRENCY;
 import com.betpawa.wallet.DepositRequest;
 import com.betpawa.wallet.DepositResponse;
 import com.betpawa.wallet.StatusMessage;
 import com.betpawa.wallet.WalletServiceGrpc.WalletServiceImplBase;
-import com.bp.wallet.server.application.Wallet;
+import com.bp.wallet.server.auto.entities.generated.Wallet;
 import com.bp.wallet.server.exception.BPServiceException;
 import com.bp.wallet.server.repository.WalletRepository;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
+import net.devh.springboot.autoconfigure.grpc.server.GrpcService;
 
-@Service
+@GrpcService(WalletServiceImplBase.class)
 public class WalletServiceTemp extends WalletServiceImplBase {
 
 	private static final Logger logger = LoggerFactory.getLogger(WalletServiceTemp.class);
