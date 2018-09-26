@@ -4,12 +4,3 @@ spring:
   application:
     name: bp-wallet-client
 
-grpc:
-  client:
-    bp-wallet-server:
-      host:
-        - 127.0.0.1
-      port:
-        - 9898
-      enableKeepAlive: true
-      keepAliveWithoutCalls: true

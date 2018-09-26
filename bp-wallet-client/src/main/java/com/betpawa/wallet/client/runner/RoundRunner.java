@@ -13,49 +13,49 @@ import com.bp.wallet.proto.WalletServiceGrpc.WalletServiceFutureStub;
 @Scope("prototype")
 public class RoundRunner implements Runner {
 
-	@Autowired
-	private WalletServiceFutureStub walletServiceFutureStub;
-	private Long numberOfrounds;
-	private String stats;
-	private Long userID;
+    @Autowired
+    private WalletServiceFutureStub walletServiceFutureStub;
+    private Long numberOfrounds;
+    private String stats;
+    private Long userID;
 
-	public RoundRunner(Long numberOfrounds, String stats, Long userID) {
-		super();
-		this.numberOfrounds = numberOfrounds;
-		this.stats = stats;
-		this.userID = userID;
-	}
+    public RoundRunner(Long numberOfrounds, String stats, Long userID) {
+        super();
+        this.numberOfrounds = numberOfrounds;
+        this.stats = stats;
+        this.userID = userID;
+    }
 
-	@Override
-	public void run() {
-		for (int i = 1; i <= numberOfrounds; i++) {
-			Client.ROUND.values()[ThreadLocalRandom.current().nextInt(0, (Client.ROUND.values().length))]
-					.goExecute(walletServiceFutureStub, userID, stats + ":Round:" + i);
-		}
-	}
+    @Override
+    public void run() {
+        for (int i = 1; i <= numberOfrounds; i++) {
+            Client.ROUND.values()[ThreadLocalRandom.current().nextInt(0, (Client.ROUND.values().length))]
+                    .goExecute(walletServiceFutureStub, userID, stats + ":Round:" + i);
+        }
+    }
 
-	public String getStats() {
-		return stats;
-	}
+    public String getStats() {
+        return stats;
+    }
 
-	public void setStats(String stats) {
-		this.stats = stats;
-	}
+    public void setStats(String stats) {
+        this.stats = stats;
+    }
 
-	public Long getUserID() {
-		return userID;
-	}
+    public Long getUserID() {
+        return userID;
+    }
 
-	public void setUserID(Long userID) {
-		this.userID = userID;
-	}
+    public void setUserID(Long userID) {
+        this.userID = userID;
+    }
 
-	public Long getNumberOfrounds() {
-		return numberOfrounds;
-	}
+    public Long getNumberOfrounds() {
+        return numberOfrounds;
+    }
 
-	public void setNumberOfrounds(Long numberOfrounds) {
-		this.numberOfrounds = numberOfrounds;
-	}
+    public void setNumberOfrounds(Long numberOfrounds) {
+        this.numberOfrounds = numberOfrounds;
+    }
 
 }

@@ -3,6 +3,3 @@ spring:
     name: bp-wallet-server
 server:
   port: 0
-grpc:
-  server:
-    port: 9898

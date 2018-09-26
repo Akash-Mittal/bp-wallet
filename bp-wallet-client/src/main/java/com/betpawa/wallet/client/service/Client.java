@@ -138,9 +138,8 @@ public interface Client {
 
 					@Override
 					public void onFailure(Throwable t) {
-						logger.warn(Status.fromThrowable(t).getDescription());
+						logger.warn(Status.fromThrowable(t).getDescription(),t);
 						latch.countDown();
-
 					}
 				});
 				return clientResponse;
@@ -171,7 +170,7 @@ public interface Client {
 
 					@Override
 					public void onFailure(Throwable t) {
-						logger.warn(Status.fromThrowable(t).getDescription());
+						logger.warn(Status.fromThrowable(t).getDescription(),t);
 						latch.countDown();
 
 					}
@@ -203,7 +202,7 @@ public interface Client {
 
 					@Override
 					public void onFailure(Throwable t) {
-						logger.warn(Status.fromThrowable(t).getDescription());
+						logger.warn(Status.fromThrowable(t).getDescription(),t);
 						latch.countDown();
 
 					}
