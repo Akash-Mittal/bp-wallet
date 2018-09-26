@@ -18,4 +18,3 @@ Parent Child based Gradle Project With Spring Boot and GRPC.
 * Authentication.
 * UI Client.
 * Caching enabled Enities - if needed.
-
