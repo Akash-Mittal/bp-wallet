@@ -9,4 +9,5 @@ public class BPWalletClientApplication {
     public static void main(String[] args) {
         SpringApplication.run(BPWalletClientApplication.class, args);
     }
+
 }

@@ -2,9 +2,14 @@ package com.betpawa.wallet.client.runner;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.betpawa.wallet.client.Client;
 import com.betpawa.wallet.client.WalletClientParams;
 
+@Component
+@Scope("prototype")
 public class RoundRunner implements Runner {
     private String stats;
     private Integer userID;
