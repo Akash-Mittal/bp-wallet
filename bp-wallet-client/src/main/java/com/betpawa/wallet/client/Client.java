@@ -112,7 +112,7 @@ public interface Client {
             public ClientResponse doTransact(final WalletServiceFutureStub futureStub, final Integer userID,
                     final Float amount, final CURRENCY currency, final String stats) {
                 final ClientResponse clientResponse = new ClientResponse.Builder()
-                        .execution_STATUS(CLIENT_EXECUTION_STATUS.FAIL).build();
+                        .execution_STATUS(STATUS.FAIL).build();
                 logger.info(stats + DEPOSIT.name());
 
                 ListenableFuture<DepositResponse> response = futureStub.deposit(
@@ -124,7 +124,7 @@ public interface Client {
                     public void onSuccess(DepositResponse result) {
 
                         logger.info("Deposited Succesfully", result.getCurrencyValue());
-                        clientResponse.setExecutionStatus(CLIENT_EXECUTION_STATUS.SUCCESS);
+                        clientResponse.setExecutionStatus(STATUS.SUCCESS);
                         clientResponse.setDepositResponse(result);
                         latch.countDown();
 
@@ -146,7 +146,7 @@ public interface Client {
                     final Float amount, final CURRENCY currency, final String stats) {
                 logger.info(stats + WITHDRAW.name());
                 final ClientResponse clientResponse = new ClientResponse.Builder()
-                        .execution_STATUS(CLIENT_EXECUTION_STATUS.FAIL).build();
+                        .execution_STATUS(STATUS.FAIL).build();
                 ListenableFuture<WithdrawResponse> response = null;
                 response = futureStub.withdraw(
                         WithdrawRequest.newBuilder().setUserID(userID).setAmount(amount).setCurrency(currency).build());
@@ -157,7 +157,7 @@ public interface Client {
                     public void onSuccess(WithdrawResponse result) {
 
                         logger.info("Withdrawn Succesfully" + result.getBalance());
-                        clientResponse.setExecutionStatus(CLIENT_EXECUTION_STATUS.SUCCESS);
+                        clientResponse.setExecutionStatus(STATUS.SUCCESS);
                         clientResponse.setWithdrawResponse(result);
                         latch.countDown();
 
@@ -179,7 +179,7 @@ public interface Client {
             public ClientResponse doTransact(final WalletServiceFutureStub futureStub, final Integer userID,
                     final Float amount, final CURRENCY currency, final String stats) {
                 final ClientResponse clientResponse = new ClientResponse.Builder()
-                        .execution_STATUS(CLIENT_EXECUTION_STATUS.FAIL).build();
+                        .execution_STATUS(STATUS.FAIL).build();
                 logger.info(stats + BALANCE.name());
                 ListenableFuture<BalanceResponse> response = futureStub
                         .balance(BalanceRequest.newBuilder().setUserID(userID).build());
@@ -189,7 +189,7 @@ public interface Client {
                     @Override
                     public void onSuccess(BalanceResponse result) {
                         logger.info("Balance Checked for user:{} Amount:{}", userID, buildGetBalanceLogLine(result));
-                        clientResponse.setExecutionStatus(CLIENT_EXECUTION_STATUS.SUCCESS);
+                        clientResponse.setExecutionStatus(STATUS.SUCCESS);
                         clientResponse.setBalanceResponse(result);
                         latch.countDown();
 
@@ -235,9 +235,5 @@ public interface Client {
             stringBuilder.append(balance.getAmount()).append(balance.getCurrency().name()).append(" ");
         });
         return stringBuilder.toString();
-    }
-
-    enum CLIENT_EXECUTION_STATUS {
-        SUCCESS, FAIL;
     }
 }

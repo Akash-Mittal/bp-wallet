@@ -3,13 +3,12 @@ package com.betpawa.wallet.client;
 import com.betpawa.wallet.BalanceResponse;
 import com.betpawa.wallet.DepositResponse;
 import com.betpawa.wallet.WithdrawResponse;
-import com.betpawa.wallet.client.Client.CLIENT_EXECUTION_STATUS;
 
 public class ClientResponse {
     private DepositResponse depositResponse;
     private WithdrawResponse withdrawResponse;
     private BalanceResponse balanceResponse;
-    private CLIENT_EXECUTION_STATUS execution_STATUS;
+    private STATUS execution_STATUS;
 
     public DepositResponse getDepositResponse() {
         return depositResponse;
@@ -35,11 +34,11 @@ public class ClientResponse {
         this.balanceResponse = balanceResponse;
     }
 
-    public CLIENT_EXECUTION_STATUS getExecution_STATUS() {
+    public STATUS getExecution_STATUS() {
         return execution_STATUS;
     }
 
-    public void setExecutionStatus(CLIENT_EXECUTION_STATUS execution_STATUS) {
+    public void setExecutionStatus(STATUS execution_STATUS) {
         this.execution_STATUS = execution_STATUS;
     }
 
@@ -47,7 +46,7 @@ public class ClientResponse {
         private DepositResponse depositResponse;
         private WithdrawResponse withdrawResponse;
         private BalanceResponse balanceResponse;
-        private CLIENT_EXECUTION_STATUS execution_STATUS;
+        private STATUS execution_STATUS;
 
         public Builder depositResponse(DepositResponse depositResponse) {
             this.depositResponse = depositResponse;
@@ -64,7 +63,7 @@ public class ClientResponse {
             return this;
         }
 
-        public Builder execution_STATUS(CLIENT_EXECUTION_STATUS execution_STATUS) {
+        public Builder execution_STATUS(STATUS execution_STATUS) {
             this.execution_STATUS = execution_STATUS;
             return this;
         }
