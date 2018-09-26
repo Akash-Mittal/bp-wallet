@@ -1,4 +1,4 @@
-package com.betpawa.wallet.client;
+package com.betpawa.wallet.client.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
+import com.betpawa.wallet.client.dto.WalletClientRequest;
+import com.betpawa.wallet.client.dto.WalletClientResponse;
+import com.betpawa.wallet.client.dto.WalletClientResponse.Builder;
+import com.betpawa.wallet.client.enums.STATUS;
 import com.betpawa.wallet.client.runner.RoundRunner;
 
 @Service

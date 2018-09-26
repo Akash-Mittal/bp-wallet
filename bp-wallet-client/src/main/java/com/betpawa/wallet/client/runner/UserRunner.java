@@ -1,6 +1,6 @@
 package com.betpawa.wallet.client.runner;
 
-import com.betpawa.wallet.client.WalletClientParams;
+import com.betpawa.wallet.client.dto.WalletClientParams;
 
 public class UserRunner implements Runner {
 	private WalletClientParams clientParams;

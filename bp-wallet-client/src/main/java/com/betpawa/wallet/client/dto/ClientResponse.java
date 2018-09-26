@@ -1,5 +1,6 @@
-package com.betpawa.wallet.client;
+package com.betpawa.wallet.client.dto;
 
+import com.betpawa.wallet.client.enums.STATUS;
 import com.bp.wallet.proto.BalanceResponse;
 import com.bp.wallet.proto.DepositResponse;
 import com.bp.wallet.proto.WithdrawResponse;

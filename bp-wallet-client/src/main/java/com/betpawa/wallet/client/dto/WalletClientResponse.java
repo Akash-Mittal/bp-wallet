@@ -1,4 +1,6 @@
-package com.betpawa.wallet.client;
+package com.betpawa.wallet.client.dto;
+
+import com.betpawa.wallet.client.enums.STATUS;
 
 public class WalletClientResponse {
 

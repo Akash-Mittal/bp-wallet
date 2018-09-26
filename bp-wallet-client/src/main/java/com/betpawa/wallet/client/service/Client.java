@@ -1,4 +1,4 @@
-package com.betpawa.wallet.client;
+package com.betpawa.wallet.client.service;
 
 import java.math.BigDecimal;
 import java.util.concurrent.CountDownLatch;
@@ -6,6 +6,10 @@ import java.util.concurrent.CountDownLatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.betpawa.wallet.client.dto.ClientResponse;
+import com.betpawa.wallet.client.dto.WalletClientParams;
+import com.betpawa.wallet.client.dto.ClientResponse.Builder;
+import com.betpawa.wallet.client.enums.STATUS;
 import com.bp.wallet.proto.BalanceRequest;
 import com.bp.wallet.proto.BalanceResponse;
 import com.bp.wallet.proto.CURRENCY;

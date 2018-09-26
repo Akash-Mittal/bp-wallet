@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.betpawa.wallet.client.Client;
+import com.betpawa.wallet.client.service.Client;
 import com.bp.wallet.proto.WalletServiceGrpc.WalletServiceFutureStub;
 
 @Component

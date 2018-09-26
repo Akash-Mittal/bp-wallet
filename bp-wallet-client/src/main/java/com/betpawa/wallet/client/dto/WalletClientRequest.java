@@ -1,4 +1,4 @@
-package com.betpawa.wallet.client;
+package com.betpawa.wallet.client.dto;
 
 public final class WalletClientRequest {
 
