@@ -2,61 +2,60 @@ package com.betpawa.wallet.client.runner;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.betpawa.wallet.client.Client;
-import com.betpawa.wallet.client.WalletClientParams;
+import com.bp.wallet.proto.WalletServiceGrpc.WalletServiceFutureStub;
 
 @Component
 @Scope("prototype")
 public class RoundRunner implements Runner {
-    private String stats;
-    private Integer userID;
-    private WalletClientParams clientParams;
 
-    @Override
-    public void run() {
-        for (int i = 1; i <= clientParams.getNumberOfRounds(); i++) {
-            Client.ROUND.values()[ThreadLocalRandom.current().nextInt(0, (Client.ROUND.values().length))]
-                    .goExecute(clientParams.getFutureStub(), userID, stats + ":Round:" + i);
-        }
-    }
+	@Autowired
+	private WalletServiceFutureStub walletServiceFutureStub;
+	private Long numberOfrounds;
+	private String stats;
+	private Long userID;
 
-    public RoundRunner(String stats, Integer userID, WalletClientParams clientParams) {
-        super();
-        this.stats = stats;
-        this.userID = userID;
-        this.clientParams = clientParams;
-    }
+	public RoundRunner(Long numberOfrounds, String stats, Long userID) {
+		super();
+		this.numberOfrounds = numberOfrounds;
+		this.stats = stats;
+		this.userID = userID;
+	}
 
-    public Integer getUserID() {
-        return userID;
-    }
+	@Override
+	public void run() {
+		for (int i = 1; i <= numberOfrounds; i++) {
+			Client.ROUND.values()[ThreadLocalRandom.current().nextInt(0, (Client.ROUND.values().length))]
+					.goExecute(walletServiceFutureStub, userID, stats + ":Round:" + i);
+		}
+	}
 
-    public void setUserID(Integer userID) {
-        this.userID = userID;
-    }
+	public String getStats() {
+		return stats;
+	}
 
-    public RoundRunner(Integer userID) {
-        super();
-        this.userID = userID;
-    }
+	public void setStats(String stats) {
+		this.stats = stats;
+	}
 
-    public String getStats() {
-        return stats;
-    }
+	public Long getUserID() {
+		return userID;
+	}
 
-    public void setStats(String stats) {
-        this.stats = stats;
-    }
+	public void setUserID(Long userID) {
+		this.userID = userID;
+	}
 
-    public WalletClientParams getClientParams() {
-        return clientParams;
-    }
+	public Long getNumberOfrounds() {
+		return numberOfrounds;
+	}
 
-    public void setClientParams(WalletClientParams clientParams) {
-        this.clientParams = clientParams;
-    }
+	public void setNumberOfrounds(Long numberOfrounds) {
+		this.numberOfrounds = numberOfrounds;
+	}
 
 }

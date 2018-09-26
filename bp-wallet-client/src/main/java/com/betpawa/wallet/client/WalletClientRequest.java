@@ -1,30 +1,32 @@
 package com.betpawa.wallet.client;
 
-import java.util.concurrent.ExecutorService;
-
-import com.betpawa.wallet.WalletServiceGrpc.WalletServiceFutureStub;
-
 public final class WalletClientRequest {
 
-    private  Integer numberOfUsers;
-    private Integer numberOfRequests;
-    private Integer numberOfRounds;
-	public Integer getNumberOfUsers() {
+	private Long numberOfUsers;
+	private Long numberOfRequests;
+	private Long numberOfRounds;
+
+	public Long getNumberOfUsers() {
 		return numberOfUsers;
 	}
-	public void setNumberOfUsers(Integer numberOfUsers) {
+
+	public void setNumberOfUsers(Long numberOfUsers) {
 		this.numberOfUsers = numberOfUsers;
 	}
-	public Integer getNumberOfRequests() {
+
+	public Long getNumberOfRequests() {
 		return numberOfRequests;
 	}
-	public void setNumberOfRequests(Integer numberOfRequests) {
+
+	public void setNumberOfRequests(Long numberOfRequests) {
 		this.numberOfRequests = numberOfRequests;
 	}
-	public Integer getNumberOfRounds() {
+
+	public Long getNumberOfRounds() {
 		return numberOfRounds;
 	}
-	public void setNumberOfRounds(Integer numberOfRounds) {
+
+	public void setNumberOfRounds(Long numberOfRounds) {
 		this.numberOfRounds = numberOfRounds;
 	}
 }

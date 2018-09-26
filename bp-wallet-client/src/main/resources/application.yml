@@ -8,7 +8,7 @@ grpc:
   client:
     bp-wallet-server:
       host:
-        - 127.0.0.1
+        - 0.0.0.0
       port:
         - 9898
       enableKeepAlive: true
