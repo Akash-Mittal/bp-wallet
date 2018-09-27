@@ -4,6 +4,8 @@ dependencies {
     compile "io.grpc:grpc-netty:${grpcVersion}"
     compile "io.grpc:grpc-protobuf:${grpcVersion}"
     compile "io.grpc:grpc-stub:${grpcVersion}"
+	compile group: 'javax.annotation', name: 'javax.annotation-api', version: '1.2'
+
 }
 
 protobuf {

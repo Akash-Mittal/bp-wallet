@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.bp.wallet.proto.Balance;
 import com.bp.wallet.proto.BalanceRequest;
@@ -28,19 +29,20 @@ import io.grpc.stub.StreamObserver;
 import net.devh.springboot.autoconfigure.grpc.server.GrpcService;
 
 @GrpcService(WalletServiceGrpc.class)
-public class WalletService extends WalletServiceGrpc.WalletServiceImplBase {
+public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase {
 
-	private static final Logger logger = LoggerFactory.getLogger(WalletService.class);
+	private static final Logger logger = LoggerFactory.getLogger(WalletServerService.class);
 
 	private final WalletRepository walletRepository;
 
 	@Autowired
-	public WalletService(WalletRepository walletRepository) {
+	public WalletServerService(WalletRepository walletRepository) {
 		super();
 		this.walletRepository = walletRepository;
 	}
 
 	@Override
+	@Transactional
 	public synchronized void deposit(DepositRequest request, StreamObserver<DepositResponse> responseObserver) {
 		BigDecimal balanceToADD = get(request.getAmount());
 		try {
@@ -77,6 +79,8 @@ public class WalletService extends WalletServiceGrpc.WalletServiceImplBase {
 	}
 
 	@Override
+	@Transactional
+
 	public synchronized void withdraw(WithdrawRequest request, StreamObserver<WithdrawResponse> responseObserver) {
 
 		logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
@@ -84,22 +88,24 @@ public class WalletService extends WalletServiceGrpc.WalletServiceImplBase {
 		try {
 			BigDecimal balanceToWithdraw = get(request.getAmount());
 			if (checkAmountGreaterThanZero(balanceToWithdraw) && checkCurrency(request.getCurrency())) {
-				Wallet userWallet = walletRepository.getOne(Long.valueOf(request.getUserID()));
-				BigDecimal existingBalance = userWallet.getBalance();
-				if (existingBalance.compareTo(balanceToWithdraw) >= 0) {
-					BigDecimal newBalance = existingBalance.subtract(balanceToWithdraw);
-					userWallet.setBalance(newBalance);
-					walletRepository.save(userWallet);
-					responseObserver.onNext(WithdrawResponse.newBuilder().setBalance(newBalance.toPlainString())
-							.setCurrency(request.getCurrency()).build());
-					responseObserver.onCompleted();
-					logger.info("Wallet Updated SuccessFully New Balance:{}", newBalance);
+				walletRepository.findById((Long.valueOf(request.getUserID()))).ifPresent(wallet -> {
+					BigDecimal existingBalance = wallet.getBalance();
+					if (existingBalance.compareTo(balanceToWithdraw) >= 0) {
+						BigDecimal newBalance = existingBalance.subtract(balanceToWithdraw);
+						wallet.setBalance(newBalance);
+						walletRepository.save(wallet);
+						responseObserver.onNext(WithdrawResponse.newBuilder().setBalance(newBalance.toPlainString())
+								.setCurrency(request.getCurrency()).build());
+						responseObserver.onCompleted();
+						logger.info("Wallet Updated SuccessFully New Balance:{}", newBalance);
 
-				} else {
-					logger.warn(StatusMessage.INSUFFICIENT_BALANCE.name());
-					responseObserver.onError(new StatusRuntimeException(
-							Status.FAILED_PRECONDITION.withDescription(StatusMessage.INSUFFICIENT_BALANCE.name())));
-				}
+					} else {
+						logger.warn(StatusMessage.INSUFFICIENT_BALANCE.name());
+						responseObserver.onError(new StatusRuntimeException(
+								Status.FAILED_PRECONDITION.withDescription(StatusMessage.INSUFFICIENT_BALANCE.name())));
+					}
+
+				});
 			} else {
 				logger.warn(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
 						+ StatusMessage.INVALID_CURRENCY.name());
@@ -118,6 +124,7 @@ public class WalletService extends WalletServiceGrpc.WalletServiceImplBase {
 	}
 
 	@Override
+	@Transactional
 	public synchronized void balance(BalanceRequest request, StreamObserver<BalanceResponse> responseObserver) {
 		logger.info("Request Recieved for UserID:{}", request.getUserID());
 		try {

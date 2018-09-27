@@ -18,7 +18,8 @@ public class WalletClientController {
 	private WalletClientService walletClientService;
 
 	@PostMapping
-	public WalletClientResponse printMessage(@RequestBody WalletClientRequest walletClientRequest) {
+	public WalletClientResponse printMessage(@RequestBody WalletClientRequest walletClientRequest)
+			throws InterruptedException {
 		return walletClientService.execute(walletClientRequest);
 	}
 }
