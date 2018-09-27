@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.betpawa.wallet.client.service.Client;
+import com.betpawa.wallet.client.enums.ROUND;
 import com.bp.wallet.proto.WalletServiceGrpc.WalletServiceFutureStub;
 
 @Component
@@ -29,7 +29,7 @@ public class RoundRunner implements Runner {
     @Override
     public void run() {
         for (int i = 1; i <= numberOfrounds; i++) {
-            Client.ROUND.values()[ThreadLocalRandom.current().nextInt(0, (Client.ROUND.values().length))]
+            ROUND.values()[ThreadLocalRandom.current().nextInt(0, (ROUND.values().length))]
                     .goExecute(walletServiceFutureStub, userID, stats + ":Round:" + i);
         }
     }

@@ -1,12 +1,15 @@
-package com.bp.wallet.server.auto.entities.generated;
+package com.bp.wallet.server.enity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.bp.wallet.proto.CURRENCY;
 
 @Entity
 @Table(name = "user_wallet")
@@ -17,7 +20,18 @@ public class Wallet implements Serializable {
 	@Column(name = "user_id")
 	private Long userId;
 	private BigDecimal balance;
-	private String currency;
+	@Enumerated
+    @Column(length = 3)
+	private CURRENCY currency;
+
+	@Override
+	public String toString() {
+		return "Wallet [userId=" + userId + ", balance=" + balance + ", currency=" + currency + "]";
+	}
+
+	public Wallet() {
+		super();
+	}
 
 	public Long getUserId() {
 		return userId;
@@ -35,18 +49,18 @@ public class Wallet implements Serializable {
 		this.balance = balance;
 	}
 
-	public String getCurrency() {
+	public CURRENCY getCurrency() {
 		return currency;
 	}
 
-	public void setCurrency(String currency) {
+	public void setCurrency(CURRENCY currency) {
 		this.currency = currency;
 	}
 
 	public static class Builder {
 		private Long userId;
 		private BigDecimal balance;
-		private String currency;
+		private CURRENCY currency;
 
 		public Builder userId(Long userId) {
 			this.userId = userId;
@@ -58,7 +72,7 @@ public class Wallet implements Serializable {
 			return this;
 		}
 
-		public Builder currency(String currency) {
+		public Builder currency(CURRENCY currency) {
 			this.currency = currency;
 			return this;
 		}
