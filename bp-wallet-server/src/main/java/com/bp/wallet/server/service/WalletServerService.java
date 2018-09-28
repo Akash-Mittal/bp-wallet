@@ -79,7 +79,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 
     @Override
 
-    public synchronized void withdraw(WithdrawRequest request, StreamObserver<WithdrawResponse> responseObserver) {
+    public void withdraw(WithdrawRequest request, StreamObserver<WithdrawResponse> responseObserver) {
 
         logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
                 request.getCurrency());
@@ -125,7 +125,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 
     @Override
 
-    public synchronized void balance(BalanceRequest request, StreamObserver<BalanceResponse> responseObserver) {
+    public void balance(BalanceRequest request, StreamObserver<BalanceResponse> responseObserver) {
         logger.info("Request Recieved for UserID:{}", request.getUserID());
         try {
             List<Wallet> userWallets = walletRepository.findByWalletPK_UserID(request.getUserID());

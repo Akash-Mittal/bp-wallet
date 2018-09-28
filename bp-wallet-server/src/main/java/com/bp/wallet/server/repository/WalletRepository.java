@@ -10,6 +10,6 @@ import com.bp.wallet.server.enity.WalletPK;
 
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, WalletPK> {
-	List<Wallet> findByWalletPK_UserID(Long userID);
+    List<Wallet> findByWalletPK_UserID(Long userID);
 
 }

@@ -21,27 +21,27 @@ import com.bp.wallet.server.enity.WalletPK;
 @DataJpaTest
 public class WalletRepositoryTest {
 
-	@Autowired
-	WalletRepository repository;
+    @Autowired
+    private WalletRepository repository;
 
-	@Before
-	public void setUp() throws Exception {
-		repository.deleteAll();
-		Random random = new Random(123L);
-		for (Long userID = 100L; userID < 200; userID++)
-			repository.save(new Wallet(new WalletPK(userID, CURRENCY.EUR), BigDecimal.valueOf(random.nextInt(3213))));
-	}
+    @Before
+    public void setUp() throws Exception {
+        repository.deleteAll();
+        Random random = new Random(123L);
+        for (Long userID = 100L; userID < 200; userID++)
+            repository.save(new Wallet(new WalletPK(userID, CURRENCY.EUR), BigDecimal.valueOf(random.nextInt(3213))));
+    }
 
-	@Test
-	public void testSetupWithFindAll() {
-		List<Wallet> wallets = repository.findAll();
-		assertThat(wallets).hasSize(100);
-	}
+    @Test
+    public void testSetupWithFindAll() {
+        List<Wallet> wallets = repository.findAll();
+        assertThat(wallets).hasSize(100);
+    }
 
-	@Test
-	public void testFindByUserID() {
-		List<Wallet> wallets = repository.findByWalletPK_UserID(100L);
-		assertThat(wallets).hasSize(1);
-	}
+    @Test
+    public void testFindByUserID() {
+        List<Wallet> wallets = repository.findByWalletPK_UserID(100L);
+        assertThat(wallets).hasSize(1);
+    }
 
 }
