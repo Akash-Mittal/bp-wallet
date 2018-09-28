@@ -17,25 +17,32 @@ import com.betpawa.wallet.client.runner.RoundRunner;
 
 @Service
 public class WalletClientService {
-	private static final Logger logger = LoggerFactory.getLogger(WalletClientService.class);
+    private static final Logger logger = LoggerFactory.getLogger(WalletClientService.class);
 
-	@Autowired
-	private TaskExecutor taskExecutor;
-	@Autowired
-	private ApplicationContext applicationContext;
+    @Autowired
+    private TaskExecutor taskExecutor;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-	@Autowired
-	private ExecutorService executorService;
+    @Autowired
+    private ExecutorService executorService;
 
-	public WalletClientResponse execute(final WalletClientRequest walletClientRequest) throws InterruptedException {
-		RoundRunner myThread = applicationContext.getBean(RoundRunner.class, walletClientRequest.getNumberOfRounds(),
-				"", Long.valueOf(99));
-		myThread.setNumberOfrounds(walletClientRequest.getNumberOfRounds());
-		myThread.setStats("");
-		myThread.setUserID(Long.valueOf(1));
-		executorService.execute(myThread);
-		executorService.awaitTermination(20000, TimeUnit.SECONDS);
+    public WalletClientResponse execute(final WalletClientRequest walletClientRequest) throws InterruptedException {
+        try {
 
-		return new WalletClientResponse.Builder().status(STATUS.SUCCESS).build();
-	}
+            RoundRunner myThread = applicationContext.getBean(RoundRunner.class,
+                    walletClientRequest.getNumberOfRounds(), "", Long.valueOf(99));
+            myThread.setNumberOfrounds(walletClientRequest.getNumberOfRounds());
+            myThread.setStats("");
+            myThread.setUserID(Long.valueOf(1));
+            executorService.execute(myThread);
+            executorService.awaitTermination(3, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return new WalletClientResponse.Builder().status(STATUS.FAIL).build();
+        } finally {
+            logger.info("Excecution done.");
+        }
+        return new WalletClientResponse.Builder().status(STATUS.SUCCESS).build();
+    }
 }
