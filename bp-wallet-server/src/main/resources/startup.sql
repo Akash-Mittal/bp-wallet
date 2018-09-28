@@ -51,7 +51,6 @@ DROP TABLE IF EXISTS `bp_user`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `bp_user` (
   `user_id` bigint(100) NOT NULL,
-  `user_name` varchar(255) NOT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -62,7 +61,7 @@ CREATE TABLE `bp_user` (
 
 LOCK TABLES `bp_user` WRITE;
 /*!40000 ALTER TABLE `bp_user` DISABLE KEYS */;
-INSERT INTO `bp_user` VALUES (1,'Mike'),(2,'Adam');
+INSERT INTO `bp_user` VALUES (1),(2);
 /*!40000 ALTER TABLE `bp_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -75,13 +74,13 @@ DROP TABLE IF EXISTS `bp_user_currency`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `bp_user_currency` (
   `user_currency_id` bigint(100) NOT NULL,
-  `currency_id` bigint(10) DEFAULT NULL,
-  `user_id` bigint(100) DEFAULT NULL,
-  PRIMARY KEY (`user_currency_id`),
-  KEY `fk_currency_idx` (`currency_id`),
-  KEY `fk_user_idx` (`user_id`),
-  CONSTRAINT `fk_currency` FOREIGN KEY (`currency_id`) REFERENCES `bp_currency` (`currency_id`) ON UPDATE CASCADE,
-  CONSTRAINT `fk_user` FOREIGN KEY (`user_id`) REFERENCES `bp_user` (`user_id`) ON UPDATE CASCADE
+  `currency_id` bigint(10) NOT NULL,
+  `user_id` bigint(100) NOT NULL,
+  PRIMARY KEY (`user_currency_id`,`currency_id`,`user_id`),
+  KEY `bp_uc_user_idx` (`user_id`),
+  KEY `bp_uc_currency_idx` (`currency_id`),
+  CONSTRAINT `bp_uc_currency` FOREIGN KEY (`currency_id`) REFERENCES `bp_currency` (`currency_id`) ON UPDATE CASCADE,
+  CONSTRAINT `bp_uc_user` FOREIGN KEY (`user_id`) REFERENCES `bp_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -103,11 +102,9 @@ DROP TABLE IF EXISTS `bp_user_wallet`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `bp_user_wallet` (
-  `user_wallet_id` bigint(100) NOT NULL,
   `user_balance` decimal(10,0) NOT NULL,
   `user_currency_id` bigint(100) DEFAULT NULL,
-  PRIMARY KEY (`user_wallet_id`),
-  KEY `FK_pyvdoi4q1boy438lwfu52kspp` (`user_currency_id`),
+  KEY `fk_idx` (`user_currency_id`),
   CONSTRAINT `fk_user_currency` FOREIGN KEY (`user_currency_id`) REFERENCES `bp_user_currency` (`user_currency_id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='	';
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -118,7 +115,7 @@ CREATE TABLE `bp_user_wallet` (
 
 LOCK TABLES `bp_user_wallet` WRITE;
 /*!40000 ALTER TABLE `bp_user_wallet` DISABLE KEYS */;
-INSERT INTO `bp_user_wallet` VALUES (1,100,1),(2,100,2);
+INSERT INTO `bp_user_wallet` VALUES (100,1),(100,2);
 /*!40000 ALTER TABLE `bp_user_wallet` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -131,4 +128,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-09-27 13:29:59
+-- Dump completed on 2018-09-28 10:10:47

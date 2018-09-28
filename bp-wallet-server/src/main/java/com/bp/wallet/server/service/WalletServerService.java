@@ -20,6 +20,7 @@ import com.bp.wallet.proto.WalletServiceGrpc;
 import com.bp.wallet.proto.WithdrawRequest;
 import com.bp.wallet.proto.WithdrawResponse;
 import com.bp.wallet.server.enity.Wallet;
+import com.bp.wallet.server.enity.WalletPK;
 import com.bp.wallet.server.exception.BPServiceException;
 import com.bp.wallet.server.repository.WalletRepository;
 
@@ -51,9 +52,8 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 				logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
 						request.getCurrency());
 				BigDecimal newBalance = currentBalance.add(balanceToADD);
-
-				walletRepository.save(new Wallet.Builder().userId(Long.valueOf(request.getUserID())).balance(newBalance)
-						.currency(request.getCurrency()).build());
+				walletRepository.save(
+						new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), get(request.getAmount())));
 
 				responseObserver.onNext(DepositResponse.newBuilder().setUserID(request.getUserID())
 						.setAmount(newBalance.toPlainString()).build());
@@ -88,24 +88,26 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 		try {
 			BigDecimal balanceToWithdraw = get(request.getAmount());
 			if (checkAmountGreaterThanZero(balanceToWithdraw) && checkCurrency(request.getCurrency())) {
-				walletRepository.findById((Long.valueOf(request.getUserID()))).ifPresent(wallet -> {
-					BigDecimal existingBalance = wallet.getBalance();
-					if (existingBalance.compareTo(balanceToWithdraw) >= 0) {
-						BigDecimal newBalance = existingBalance.subtract(balanceToWithdraw);
-						wallet.setBalance(newBalance);
-						walletRepository.save(wallet);
-						responseObserver.onNext(WithdrawResponse.newBuilder().setBalance(newBalance.toPlainString())
-								.setCurrency(request.getCurrency()).build());
-						responseObserver.onCompleted();
-						logger.info("Wallet Updated SuccessFully New Balance:{}", newBalance);
+				walletRepository.findById(new WalletPK(request.getUserID(), request.getCurrency()))
+						.ifPresent(wallet -> {
+							BigDecimal existingBalance = wallet.getBalance();
+							if (existingBalance.compareTo(balanceToWithdraw) >= 0) {
+								BigDecimal newBalance = existingBalance.subtract(balanceToWithdraw);
+								wallet.setBalance(newBalance);
+								walletRepository.save(wallet);
+								responseObserver
+										.onNext(WithdrawResponse.newBuilder().setBalance(newBalance.toPlainString())
+												.setCurrency(request.getCurrency()).build());
+								responseObserver.onCompleted();
+								logger.info("Wallet Updated SuccessFully New Balance:{}", newBalance);
 
-					} else {
-						logger.warn(StatusMessage.INSUFFICIENT_BALANCE.name());
-						responseObserver.onError(new StatusRuntimeException(
-								Status.FAILED_PRECONDITION.withDescription(StatusMessage.INSUFFICIENT_BALANCE.name())));
-					}
+							} else {
+								logger.warn(StatusMessage.INSUFFICIENT_BALANCE.name());
+								responseObserver.onError(new StatusRuntimeException(Status.FAILED_PRECONDITION
+										.withDescription(StatusMessage.INSUFFICIENT_BALANCE.name())));
+							}
 
-				});
+						});
 			} else {
 				logger.warn(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
 						+ StatusMessage.INVALID_CURRENCY.name());
@@ -128,14 +130,14 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 	public synchronized void balance(BalanceRequest request, StreamObserver<BalanceResponse> responseObserver) {
 		logger.info("Request Recieved for UserID:{}", request.getUserID());
 		try {
-			List<Wallet> userWallets = walletRepository.findAll();
+			List<Wallet> userWallets = walletRepository.findByWalletPK_UserID(request.getUserID());
 			List<Balance> balanceList = new ArrayList<>();
 
 			final StringBuilder balance = new StringBuilder();
 			userWallets.forEach(wallet -> {
 				Balance bl = Balance.newBuilder().setAmount(wallet.getBalance().toPlainString())
-						.setCurrency(wallet.getCurrency()).build();
-				balance.append(wallet.getCurrency() + ":" + wallet.getBalance());
+						.setCurrency(wallet.getWalletPK().getCurrency()).build();
+				balance.append(wallet.getWalletPK().getCurrency() + ":" + wallet.getBalance());
 				balanceList.add(bl);
 			});
 			logger.info(balance.toString());

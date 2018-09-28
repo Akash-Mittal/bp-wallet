@@ -3,42 +3,70 @@ package com.bp.wallet.server.enity;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
 import javax.persistence.Table;
-
-import com.bp.wallet.proto.CURRENCY;
+import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "user_wallet")
+@Table(name = "wallet")
 public class Wallet implements Serializable {
-	private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9189082357635718615L;
 
-	@Id
-	@Column(name = "user_id")
-	private Long userId;
+	@EmbeddedId
+	private WalletPK walletPK;
+	@NotNull
 	private BigDecimal balance;
-	@Enumerated
-    @Column(length = 3)
-	private CURRENCY currency;
 
-	@Override
-	public String toString() {
-		return "Wallet [userId=" + userId + ", balance=" + balance + ", currency=" + currency + "]";
+	public Wallet(WalletPK walletPK, BigDecimal balance) {
+		super();
+		this.walletPK = walletPK;
+		this.balance = balance;
 	}
 
 	public Wallet() {
-		super();
 	}
 
-	public Long getUserId() {
-		return userId;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((balance == null) ? 0 : balance.hashCode());
+		result = prime * result + ((walletPK == null) ? 0 : walletPK.hashCode());
+		return result;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Wallet other = (Wallet) obj;
+		if (balance == null) {
+			if (other.balance != null)
+				return false;
+		} else if (!balance.equals(other.balance))
+			return false;
+		if (walletPK == null) {
+			if (other.walletPK != null)
+				return false;
+		} else if (!walletPK.equals(other.walletPK))
+			return false;
+		return true;
+	}
+
+	public WalletPK getWalletPK() {
+		return walletPK;
+	}
+
+	public void setWalletPK(WalletPK walletPK) {
+		this.walletPK = walletPK;
 	}
 
 	public BigDecimal getBalance() {
@@ -49,31 +77,17 @@ public class Wallet implements Serializable {
 		this.balance = balance;
 	}
 
-	public CURRENCY getCurrency() {
-		return currency;
-	}
-
-	public void setCurrency(CURRENCY currency) {
-		this.currency = currency;
-	}
-
 	public static class Builder {
-		private Long userId;
+		private WalletPK walletPK;
 		private BigDecimal balance;
-		private CURRENCY currency;
 
-		public Builder userId(Long userId) {
-			this.userId = userId;
+		public Builder walletPK(WalletPK walletPK) {
+			this.walletPK = walletPK;
 			return this;
 		}
 
 		public Builder balance(BigDecimal balance) {
 			this.balance = balance;
-			return this;
-		}
-
-		public Builder currency(CURRENCY currency) {
-			this.currency = currency;
 			return this;
 		}
 
@@ -83,8 +97,7 @@ public class Wallet implements Serializable {
 	}
 
 	private Wallet(Builder builder) {
-		this.userId = builder.userId;
+		this.walletPK = builder.walletPK;
 		this.balance = builder.balance;
-		this.currency = builder.currency;
 	}
 }

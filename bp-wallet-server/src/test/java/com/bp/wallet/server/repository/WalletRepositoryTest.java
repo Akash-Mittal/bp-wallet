@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.bp.wallet.proto.CURRENCY;
 import com.bp.wallet.server.enity.Wallet;
+import com.bp.wallet.server.enity.WalletPK;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -25,16 +27,21 @@ public class WalletRepositoryTest {
 	@Before
 	public void setUp() throws Exception {
 		repository.deleteAll();
-		repository.save(new Wallet.Builder().balance(BigDecimal.TEN).userId(12L).currency(CURRENCY.EUR).build());
-		repository.save(new Wallet.Builder().balance(BigDecimal.TEN).userId(22L).currency(CURRENCY.EUR).build());
-		repository.save(new Wallet.Builder().balance(BigDecimal.TEN).userId(32L).currency(CURRENCY.EUR).build());
-		repository.save(new Wallet.Builder().balance(BigDecimal.TEN).userId(42L).currency(CURRENCY.EUR).build());
+		Random random = new Random(123L);
+		for (Long userID = 100L; userID < 200; userID++)
+			repository.save(new Wallet(new WalletPK(userID, CURRENCY.EUR), BigDecimal.valueOf(random.nextInt(3213))));
 	}
 
 	@Test
 	public void testSetupWithFindAll() {
 		List<Wallet> wallets = repository.findAll();
-		assertThat(wallets).hasSize(4);
+		assertThat(wallets).hasSize(100);
+	}
+
+	@Test
+	public void testFindByUserID() {
+		List<Wallet> wallets = repository.findByWalletPK_UserID(100L);
+		assertThat(wallets).hasSize(1);
 	}
 
 }

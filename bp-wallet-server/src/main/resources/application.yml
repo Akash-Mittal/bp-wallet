@@ -1,5 +1,13 @@
 spring:
   application:
-    name: bp-wallet-server
+   name: bp-wallet-server
+  datasource:
+   url: jdbc:mysql://localhost:3306/bp_wallet
+   username: root
+   password: root
+  jpa:
+   hibernate.ddl-auto: create
+   generate-ddl: true
+   show-sql: true  
 server:
   port: 0
