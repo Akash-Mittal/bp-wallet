@@ -2,6 +2,7 @@ package com.betpawa.wallet.client.service;
 
 import java.math.BigDecimal;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -16,7 +17,9 @@ import com.betpawa.wallet.client.dto.WalletClientRequest;
 import com.betpawa.wallet.client.dto.WalletClientResponse;
 import com.betpawa.wallet.client.enums.STATUS;
 import com.betpawa.wallet.client.runner.Deposit;
+import com.betpawa.wallet.client.runner.Withdraw;
 import com.bp.wallet.proto.CURRENCY;
+import com.google.common.util.concurrent.Futures;
 
 @Service
 public class WalletClientService {
@@ -37,7 +40,12 @@ public class WalletClientService {
             while (!done.get()) {
                 Deposit myThread = applicationContext.getBean(Deposit.class, Long.valueOf(1234L), BigDecimal.TEN,
                         CURRENCY.EUR);
-                logger.info("---->" + myThread + "---->" + myThread.get());
+                Withdraw myThread2 = applicationContext.getBean(Withdraw.class, Long.valueOf(1234L), BigDecimal.TEN,
+                        CURRENCY.EUR);
+                Futures.whenAllComplete(futures)
+                logger.info("---->" + myThread + "---->" + myThread.get().get());
+                logger.info("---->" + myThread2 + "---->" + myThread2.get().);
+
                 rpcCount++;
             }
 

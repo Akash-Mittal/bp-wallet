@@ -1,6 +1,7 @@
 package com.betpawa.wallet.client.runner;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Supplier;
 
@@ -11,9 +12,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.bp.wallet.proto.CURRENCY;
-import com.bp.wallet.proto.DepositRequest;
-import com.bp.wallet.proto.DepositResponse;
 import com.bp.wallet.proto.WalletServiceGrpc.WalletServiceFutureStub;
+import com.bp.wallet.proto.WithdrawRequest;
+import com.bp.wallet.proto.WithdrawResponse;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -22,8 +23,8 @@ import io.grpc.Status;
 
 @Component
 @Scope("prototype")
-public class Deposit implements Supplier<ListenableFuture<DepositResponse>> {
-    private static final Logger logger = LoggerFactory.getLogger(Deposit.class);
+public class Withdraw implements Supplier<WithdrawResponse> {
+    private static final Logger logger = LoggerFactory.getLogger(Withdraw.class);
 
     @Autowired
     private WalletServiceFutureStub futureStub;
@@ -35,26 +36,32 @@ public class Deposit implements Supplier<ListenableFuture<DepositResponse>> {
     private CURRENCY currency;
 
     @Override
-    public ListenableFuture<DepositResponse> get() {
-        ListenableFuture<DepositResponse> depositResponseLF = null;
-        depositResponseLF = futureStub.deposit(DepositRequest.newBuilder().setUserID(userID)
-                .setAmount(amount.toPlainString()).setCurrency(currency).build());
-        Futures.addCallback(depositResponseLF, new FutureCallback<DepositResponse>() {
-            @Override
-            public void onSuccess(DepositResponse result) {
-                logger.info("Deposited Succesfully");
-                // latch.countDown();
+    public WithdrawResponse get() {
+        try {
 
-            }
+            ListenableFuture<WithdrawResponse> withdrawResponseLF = futureStub.withdraw(WithdrawRequest.newBuilder()
+                    .setUserID(userID).setAmount(amount.toPlainString()).setCurrency(currency).build());
+            Futures.addCallback(withdrawResponseLF, new FutureCallback<WithdrawResponse>() {
+                @Override
+                public void onSuccess(WithdrawResponse result) {
+                    logger.info("Withdrawn Succesfully");
+                    // latch.countDown();
 
-            @Override
-            public void onFailure(Throwable t) {
-                logger.warn(Status.fromThrowable(t).getDescription());
-                // latch.countDown();
-            }
-        }, executorService);
-        return depositResponseLF;
+                }
 
+                @Override
+                public void onFailure(Throwable t) {
+                    logger.warn(Status.fromThrowable(t).getDescription());
+                    // latch.countDown();
+                }
+            }, executorService);
+
+            return withdrawResponseLF.get();
+        } catch (InterruptedException | ExecutionException e) {
+            logger.error("--->", e);
+        }
+
+        return WithdrawResponse.newBuilder().build();
     }
 
     public Long getUserID()
@@ -84,7 +91,7 @@ public class Deposit implements Supplier<ListenableFuture<DepositResponse>> {
         this.currency = currency;
     }
 
-    public Deposit(Long userID, BigDecimal amount, CURRENCY currency) {
+    public Withdraw(Long userID, BigDecimal amount, CURRENCY currency) {
         super();
         this.userID = userID;
         this.amount = amount;
