@@ -1,11 +1,20 @@
 spring:
-  profiles.active: development
-  
+  profiles: default 
+
 
 ---
 
 spring:
-  profiles: development
+  application:
+   name: bp-wallet-server
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:sampletest;MODE=MySQL
+
+---
+
+spring:
+  profiles: dev
   application:
    name: bp-wallet-server
   datasource:
