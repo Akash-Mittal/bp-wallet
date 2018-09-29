@@ -1,12 +1,12 @@
 package com.betpawa.wallet.client.runner;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.betpawa.wallet.client.enums.ROUND;
+import com.betpawa.wallet.client.enums.AMOUNT;
+import com.betpawa.wallet.client.enums.TRANSACTION;
+import com.bp.wallet.proto.CURRENCY;
 import com.bp.wallet.proto.WalletServiceGrpc.WalletServiceFutureStub;
 
 @Component
@@ -29,8 +29,10 @@ public class RoundRunner implements Runner {
     @Override
     public void run() {
         for (int i = 1; i <= numberOfrounds; i++) {
-            ROUND.values()[ThreadLocalRandom.current().nextInt(0, (ROUND.values().length))]
-                    .goExecute(walletServiceFutureStub, userID, stats + ":Round:" + i);
+            // ROUND.values()[ThreadLocalRandom.current().nextInt(0, (ROUND.values().length))]
+            // .goExecute(walletServiceFutureStub, userID, stats + ":Round:" + i);
+            TRANSACTION.DEPOSIT.doTransact(walletServiceFutureStub, userID, AMOUNT.FIVEHUNDERED.getAmount(),
+                    CURRENCY.GBP, stats);
         }
     }
 

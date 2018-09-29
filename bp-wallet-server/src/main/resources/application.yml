@@ -9,12 +9,12 @@ spring:
   application:
    name: bp-wallet-server
   datasource:
-   url: jdbc:mysql://192.168.99.100:6603/bp_wallet?useSSL=false
+   url: jdbc:mysql://192.168.99.100:6603/sys?useSSL=false
    username: root
    password: mypassword
    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-   hibernate.ddl-auto: none
+   hibernate.ddl-auto: update
    generate-ddl: true
    show-sql: true
    properties:

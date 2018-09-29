@@ -36,7 +36,7 @@ public class WalletClientService {
             myThread.setStats("");
             myThread.setUserID(Long.valueOf(1));
             executorService.execute(myThread);
-            executorService.awaitTermination(3, TimeUnit.SECONDS);
+            executorService.awaitTermination(10, TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return new WalletClientResponse.Builder().status(STATUS.FAIL).build();

@@ -3,10 +3,16 @@ package com.bp.wallet.server.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate5.HibernateOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.bp.wallet.proto.Balance;
 import com.bp.wallet.proto.BalanceRequest;
@@ -29,35 +35,35 @@ import io.grpc.stub.StreamObserver;
 import net.devh.springboot.autoconfigure.grpc.server.GrpcService;
 
 @GrpcService(WalletServiceGrpc.class)
+@Transactional(isolation = Isolation.READ_UNCOMMITTED)
 public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase {
 
     private static final Logger logger = LoggerFactory.getLogger(WalletServerService.class);
-
-    private final WalletRepository walletRepository;
-
     @Autowired
-    public WalletServerService(WalletRepository walletRepository) {
-        super();
-        this.walletRepository = walletRepository;
-    }
+    private WalletRepository walletRepository;
 
     @Override
-
-    public synchronized void deposit(DepositRequest request, StreamObserver<DepositResponse> responseObserver) {
-        BigDecimal balanceToADD = get(request.getAmount());
+    @Retryable(value = { Exception.class,
+            HibernateOptimisticLockingFailureException.class }, maxAttempts = 1, backoff = @Backoff(delay = 5000))
+    public void deposit(final DepositRequest request, final StreamObserver<DepositResponse> responseObserver) {
+        final BigDecimal balanceToADD = get(request.getAmount());
         try {
             if (checkAmountGreaterThanZero(balanceToADD) && checkCurrency(request.getCurrency())) {
-                BigDecimal currentBalance = BigDecimal.ZERO;
-                logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
-                        request.getCurrency());
-                BigDecimal newBalance = currentBalance.add(balanceToADD);
-                walletRepository.save(
-                        new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), get(request.getAmount())));
+                logger.debug("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(),
+                        request.getAmount(), request.getCurrency());
 
-                responseObserver.onNext(DepositResponse.newBuilder().setUserID(request.getUserID())
-                        .setAmount(newBalance.toPlainString()).build());
+                Optional<Wallet> wallet = walletRepository
+                        .findByWalletPK_UserIDAndWalletPK_Currency(request.getUserID(), request.getCurrency());
+                if (wallet.isPresent()) {
+                    walletRepository.updateBalance(wallet.get().getBalance().add(balanceToADD), request.getUserID(),
+                            request.getCurrency());
+                } else {
+                    walletRepository.saveAndFlush(
+                            new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), (balanceToADD)));
+                }
+                responseObserver.onNext(DepositResponse.newBuilder().setUserID(request.getUserID()).build());
                 responseObserver.onCompleted();
-                logger.info("Wallet Updated SuccessFully New Balance:{}", newBalance);
+                logger.debug("Wallet Updated SuccessFully");
 
             } else {
                 logger.warn(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
@@ -66,29 +72,25 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
                         .withDescription(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
                                 + StatusMessage.INVALID_CURRENCY.name())));
             }
-            super.deposit(request, responseObserver);
-        } catch (BPServiceException e) {
-            responseObserver.onError(new StatusRuntimeException(e.getStatus().withDescription(e.getMessage())));
-
         } catch (Exception e) {
-            logger.error(StatusMessage.UNRECOGNIZED.name(), e);
-            responseObserver.onError(
-                    new StatusRuntimeException(Status.UNKNOWN.withDescription(StatusMessage.UNRECOGNIZED.name())));
+            logger.error("------------>", e);
+            responseObserver.onError(new StatusRuntimeException(Status.UNKNOWN.withDescription(e.getMessage())));
         }
     }
 
     @Override
-
-    public void withdraw(WithdrawRequest request, StreamObserver<WithdrawResponse> responseObserver) {
+    public void withdraw(final WithdrawRequest request, final StreamObserver<WithdrawResponse> responseObserver) {
 
         logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
                 request.getCurrency());
         try {
-            BigDecimal balanceToWithdraw = get(request.getAmount());
+            final BigDecimal balanceToWithdraw = get(request.getAmount());
+            final BigDecimal existingBalance = BigDecimal.ZERO;
+
             if (checkAmountGreaterThanZero(balanceToWithdraw) && checkCurrency(request.getCurrency())) {
                 walletRepository.findById(new WalletPK(request.getUserID(), request.getCurrency()))
                         .ifPresent(wallet -> {
-                            BigDecimal existingBalance = wallet.getBalance();
+                            existingBalance.add(wallet.getBalance());
                             if (existingBalance.compareTo(balanceToWithdraw) >= 0) {
                                 BigDecimal newBalance = existingBalance.subtract(balanceToWithdraw);
                                 wallet.setBalance(newBalance);
@@ -100,9 +102,9 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
                                 logger.info("Wallet Updated SuccessFully New Balance:{}", newBalance);
 
                             } else {
-                                logger.warn(StatusMessage.INSUFFICIENT_BALANCE.name());
-                                responseObserver.onError(new StatusRuntimeException(Status.FAILED_PRECONDITION
-                                        .withDescription(StatusMessage.INSUFFICIENT_BALANCE.name())));
+                                // logger.warn(StatusMessage.INSUFFICIENT_BALANCE.name());
+                                // responseObserver.onError(new StatusRuntimeException(Status.FAILED_PRECONDITION
+                                // .withDescription(StatusMessage.INSUFFICIENT_BALANCE.name())));
                             }
 
                         });
@@ -113,19 +115,14 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
                         .withDescription(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
                                 + StatusMessage.INVALID_CURRENCY.name())));
             }
-        } catch (BPServiceException e) {
-            responseObserver.onError(new StatusRuntimeException(e.getStatus().withDescription(e.getMessage())));
-
         } catch (Exception e) {
-            logger.error(StatusMessage.UNRECOGNIZED.name(), e);
-            responseObserver.onError(
-                    new StatusRuntimeException(Status.UNKNOWN.withDescription(StatusMessage.UNRECOGNIZED.name())));
+            logger.error("------------>", e);
+            responseObserver.onError(new StatusRuntimeException(Status.UNKNOWN.withDescription(e.getMessage())));
         }
     }
 
     @Override
-
-    public void balance(BalanceRequest request, StreamObserver<BalanceResponse> responseObserver) {
+    public void balance(final BalanceRequest request, final StreamObserver<BalanceResponse> responseObserver) {
         logger.info("Request Recieved for UserID:{}", request.getUserID());
         try {
             List<Wallet> userWallets = walletRepository.findByWalletPK_UserID(request.getUserID());
@@ -145,16 +142,14 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
             logger.warn(StatusMessage.USER_DOES_NOT_EXIST.name());
             responseObserver.onError(new StatusRuntimeException(
                     Status.FAILED_PRECONDITION.withDescription(StatusMessage.USER_DOES_NOT_EXIST.name())));
-
         } catch (Exception e) {
-            logger.error(StatusMessage.UNRECOGNIZED.name(), e);
-            responseObserver.onError(
-                    new StatusRuntimeException(Status.UNKNOWN.withDescription(StatusMessage.UNRECOGNIZED.name())));
+            logger.error("------------>", e);
+            responseObserver.onError(new StatusRuntimeException(Status.UNKNOWN.withDescription(e.getMessage())));
         }
 
     }
 
-    private boolean checkAmountGreaterThanZero(BigDecimal amount) {
+    private boolean checkAmountGreaterThanZero(final BigDecimal amount) {
         boolean valid = false;
         if (amount.compareTo(BigDecimal.ZERO) > 0) {
             valid = true;
@@ -162,7 +157,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
         return valid;
     }
 
-    private boolean checkCurrency(CURRENCY currency) {
+    private boolean checkCurrency(final CURRENCY currency) {
         boolean valid = true;
         if (currency.equals(CURRENCY.UNRECOGNIZED)) {
             valid = false;
@@ -170,7 +165,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
         return valid;
     }
 
-    private BigDecimal get(String val) {
+    private BigDecimal get(final String val) {
         return new BigDecimal(val);
     }
 }

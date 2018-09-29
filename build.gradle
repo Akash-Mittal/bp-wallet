@@ -9,7 +9,7 @@ buildscript {
     ext {
         projectVersion = '2.0.1.RELEASE'
 
-        grpcVersion = '1.14.0'
+        grpcVersion = '1.15.0'
         protobufVersion = '3.5.1'
         protobufGradlePluginVersion = '0.8.4'
 
