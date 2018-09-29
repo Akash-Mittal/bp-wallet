@@ -33,6 +33,11 @@ public class RoundRunner implements Runner {
             // .goExecute(walletServiceFutureStub, userID, stats + ":Round:" + i);
             TRANSACTION.DEPOSIT.doTransact(walletServiceFutureStub, userID, AMOUNT.FIVEHUNDERED.getAmount(),
                     CURRENCY.GBP, stats);
+            TRANSACTION.WITHDRAW.doTransact(walletServiceFutureStub, userID, AMOUNT.FIVEHUNDERED.getAmount(),
+                    CURRENCY.GBP, stats);
+            TRANSACTION.BALANCE.doTransact(walletServiceFutureStub, userID, AMOUNT.FIVEHUNDERED.getAmount(),
+                    CURRENCY.GBP, stats);
+
         }
     }
 

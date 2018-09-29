@@ -8,9 +8,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.HibernateOptimisticLockingFailureException;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,14 +40,14 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
     private WalletRepository walletRepository;
 
     @Override
-    @Retryable(value = { Exception.class,
-            HibernateOptimisticLockingFailureException.class }, maxAttempts = 1, backoff = @Backoff(delay = 5000))
+    // @Retryable(value = { Exception.class,
+    // HibernateOptimisticLockingFailureException.class }, maxAttempts = 1, backoff = @Backoff(delay = 5000))
     public void deposit(final DepositRequest request, final StreamObserver<DepositResponse> responseObserver) {
         final BigDecimal balanceToADD = get(request.getAmount());
         try {
             if (checkAmountGreaterThanZero(balanceToADD) && checkCurrency(request.getCurrency())) {
-                logger.debug("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(),
-                        request.getAmount(), request.getCurrency());
+                logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
+                        request.getCurrency());
 
                 Optional<Wallet> wallet = walletRepository
                         .findByWalletPK_UserIDAndWalletPK_Currency(request.getUserID(), request.getCurrency());
@@ -63,7 +60,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
                 }
                 responseObserver.onNext(DepositResponse.newBuilder().setUserID(request.getUserID()).build());
                 responseObserver.onCompleted();
-                logger.debug("Wallet Updated SuccessFully");
+                logger.info("Wallet Updated SuccessFully");
 
             } else {
                 logger.warn(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
@@ -85,35 +82,26 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
                 request.getCurrency());
         try {
             final BigDecimal balanceToWithdraw = get(request.getAmount());
-            final BigDecimal existingBalance = BigDecimal.ZERO;
 
-            if (checkAmountGreaterThanZero(balanceToWithdraw) && checkCurrency(request.getCurrency())) {
-                walletRepository.findById(new WalletPK(request.getUserID(), request.getCurrency()))
-                        .ifPresent(wallet -> {
-                            existingBalance.add(wallet.getBalance());
-                            if (existingBalance.compareTo(balanceToWithdraw) >= 0) {
-                                BigDecimal newBalance = existingBalance.subtract(balanceToWithdraw);
-                                wallet.setBalance(newBalance);
-                                walletRepository.save(wallet);
-                                responseObserver
-                                        .onNext(WithdrawResponse.newBuilder().setBalance(newBalance.toPlainString())
-                                                .setCurrency(request.getCurrency()).build());
-                                responseObserver.onCompleted();
-                                logger.info("Wallet Updated SuccessFully New Balance:{}", newBalance);
+            Optional<Wallet> wallet = walletRepository.findByWalletPK_UserIDAndWalletPK_Currency(request.getUserID(),
+                    request.getCurrency());
+            if (wallet.isPresent()) {
+                if (wallet.get().getBalance().compareTo(balanceToWithdraw) >= 0) {
+                    walletRepository.updateBalance(wallet.get().getBalance().subtract(balanceToWithdraw),
+                            request.getUserID(), request.getCurrency());
+                    responseObserver.onNext(WithdrawResponse.newBuilder().build());
+                    responseObserver.onCompleted();
+                    logger.info("Wallet Updated SuccessFully");
 
-                            } else {
-                                // logger.warn(StatusMessage.INSUFFICIENT_BALANCE.name());
-                                // responseObserver.onError(new StatusRuntimeException(Status.FAILED_PRECONDITION
-                                // .withDescription(StatusMessage.INSUFFICIENT_BALANCE.name())));
-                            }
-
-                        });
+                } else {
+                    logger.warn(StatusMessage.INSUFFICIENT_BALANCE.name());
+                    responseObserver.onError(new StatusRuntimeException(
+                            Status.FAILED_PRECONDITION.withDescription(StatusMessage.INSUFFICIENT_BALANCE.name())));
+                }
             } else {
-                logger.warn(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
-                        + StatusMessage.INVALID_CURRENCY.name());
-                responseObserver.onError(new StatusRuntimeException(Status.FAILED_PRECONDITION
-                        .withDescription(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
-                                + StatusMessage.INVALID_CURRENCY.name())));
+                logger.warn(StatusMessage.USER_DOES_NOT_EXIST.name());
+                responseObserver.onError(new StatusRuntimeException(
+                        Status.FAILED_PRECONDITION.withDescription(StatusMessage.USER_DOES_NOT_EXIST.name())));
             }
         } catch (Exception e) {
             logger.error("------------>", e);

@@ -10,19 +10,20 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 public class ThreadPoolConfig {
-	@Bean
-	public TaskExecutor threadPoolTaskExecutor() {
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(4);
-		executor.setMaxPoolSize(4);
-		executor.setThreadNamePrefix("bp-wallet-client");
-		executor.initialize();
-		return executor;
-	}
+    @Bean
+    public TaskExecutor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(20);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("bp-wallet-client");
+        executor.initialize();
+        return executor;
+    }
 
-	@Bean
-	ExecutorService executorService() {
-		return Executors.newFixedThreadPool(10);
-	}
+    @Bean
+    ExecutorService executorService() {
+        return Executors.newFixedThreadPool(10);
+    }
 
 }
