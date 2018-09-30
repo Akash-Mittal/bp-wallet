@@ -3,6 +3,8 @@ package com.bp.wallet.server.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.bp.wallet.proto.StatusMessage;
+
 import io.grpc.Metadata;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -11,26 +13,26 @@ public class BPBaseException extends StatusRuntimeException {
     private static final long serialVersionUID = 4267114442294762693L;
     private static final Logger logger = LoggerFactory.getLogger(BPBaseException.class);
 
-    private String message;
+    private StatusMessage errorStatus;
 
     public BPBaseException(Status status, Metadata trailers) {
         super(status, trailers);
-        // TODO Auto-generated constructor stub
     }
 
-    public BPBaseException(String message, Status status) {
+    public BPBaseException(Status status) {
         super(status);
-        logger.error(message);
-        this.setMessage(message);
     }
 
-    @Override
-    public String getMessage() {
-        return message;
+    public BPBaseException(Status status, StatusMessage errorStatus) {
+        super(status);
+        this.errorStatus = errorStatus;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public StatusMessage getErrorStatus() {
+        return errorStatus;
     }
 
+    public void setErrorStatus(StatusMessage errorStatus) {
+        this.errorStatus = errorStatus;
+    }
 }
