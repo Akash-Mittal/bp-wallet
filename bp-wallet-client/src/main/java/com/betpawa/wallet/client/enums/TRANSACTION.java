@@ -1,20 +1,13 @@
 package com.betpawa.wallet.client.enums;
 
-import java.math.BigDecimal;
-import java.util.concurrent.CountDownLatch;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.task.TaskExecutor;
 
-import com.betpawa.wallet.client.dto.ClientResponse;
-import com.bp.wallet.proto.BalanceRequest;
-import com.bp.wallet.proto.BalanceResponse;
-import com.bp.wallet.proto.CURRENCY;
-import com.bp.wallet.proto.DepositRequest;
-import com.bp.wallet.proto.DepositResponse;
+import com.bp.wallet.proto.BaseRequest;
+import com.bp.wallet.proto.BaseResponse;
+import com.bp.wallet.proto.STATUS;
 import com.bp.wallet.proto.WalletServiceGrpc.WalletServiceFutureStub;
-import com.bp.wallet.proto.WithdrawRequest;
-import com.bp.wallet.proto.WithdrawResponse;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -25,54 +18,36 @@ public enum TRANSACTION {
 
     DEPOSIT {
         @Override
-        public ClientResponse doTransact(final WalletServiceFutureStub futureStub, final Long userID,
-                final BigDecimal amount, final CURRENCY currency, final String stats) {
-            final ClientResponse clientResponse = new ClientResponse.Builder().execution_STATUS(STATUS.FAIL).build();
-            logger.info(stats + DEPOSIT.name());
+        public ListenableFuture<BaseResponse> doTransact(final WalletServiceFutureStub futureStub,
+                final BaseRequest baseRequest, TaskExecutor taskExecutor) {
 
-            ListenableFuture<DepositResponse> response = futureStub.deposit(DepositRequest.newBuilder()
-                    .setAmount(amount.toPlainString()).setUserID(userID).setCurrency(currency).build());
-            // final CountDownLatch latch = new CountDownLatch(1);
+            ListenableFuture<BaseResponse> response = futureStub.deposit(baseRequest);
 
-            Futures.addCallback(response, new FutureCallback<DepositResponse>() {
+            Futures.addCallback(response, new FutureCallback<BaseResponse>() {
                 @Override
-                public void onSuccess(DepositResponse result) {
-
-                    logger.info("Deposited Succesfully");
-                    clientResponse.setExecutionStatus(STATUS.SUCCESS);
-                    clientResponse.setDepositResponse(result);
-                    // latch.countDown();
-
+                public void onSuccess(BaseResponse result) {
+                    logger.info(STATUS.TRANSACTION_SUCCESS.name());
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
                     logger.warn(Status.fromThrowable(t).getDescription());
-                    // latch.countDown();
                 }
-            });
+            }, taskExecutor);
 
-            return clientResponse;
+            return response;
         }
     },
     WITHDRAW {
         @Override
-        public ClientResponse doTransact(final WalletServiceFutureStub futureStub, final Long userID,
-                final BigDecimal amount, final CURRENCY currency, final String stats) {
-            logger.info(stats + WITHDRAW.name());
-            final ClientResponse clientResponse = new ClientResponse.Builder().execution_STATUS(STATUS.FAIL).build();
-            ListenableFuture<WithdrawResponse> response = null;
-            response = futureStub.withdraw(WithdrawRequest.newBuilder().setUserID(userID)
-                    .setAmount(amount.toPlainString()).setCurrency(currency).build());
-            // final CountDownLatch latch = new CountDownLatch(1);
+        public ListenableFuture<BaseResponse> doTransact(final WalletServiceFutureStub futureStub,
+                final BaseRequest baseRequest, TaskExecutor taskExecutor) {
+            ListenableFuture<BaseResponse> response = futureStub.withdraw(baseRequest);
 
-            Futures.addCallback(response, new FutureCallback<WithdrawResponse>() {
+            Futures.addCallback(response, new FutureCallback<BaseResponse>() {
                 @Override
-                public void onSuccess(WithdrawResponse result) {
-                    logger.info("Withdrawn Succesfully");
-                    clientResponse.setExecutionStatus(STATUS.SUCCESS);
-                    clientResponse.setWithdrawResponse(result);
-                    // latch.countDown();
+                public void onSuccess(BaseResponse result) {
+                    logger.info(STATUS.TRANSACTION_SUCCESS.name());
                 }
 
                 @Override
@@ -81,45 +56,35 @@ public enum TRANSACTION {
                     // latch.countDown();
 
                 }
-            });
-            return clientResponse;
+            }, taskExecutor);
+            return response;
 
         }
     },
     BALANCE {
         @Override
-        public ClientResponse doTransact(final WalletServiceFutureStub futureStub, final Long userID,
-                final BigDecimal amount, final CURRENCY currency, final String stats) {
-            final ClientResponse clientResponse = new ClientResponse.Builder().execution_STATUS(STATUS.FAIL).build();
-            logger.info(stats + BALANCE.name());
-            ListenableFuture<BalanceResponse> response = futureStub
-                    .balance(BalanceRequest.newBuilder().setUserID(userID).build());
-            final CountDownLatch latch = new CountDownLatch(1);
+        public ListenableFuture<BaseResponse> doTransact(final WalletServiceFutureStub futureStub,
+                final BaseRequest baseRequest, TaskExecutor taskExecutor) {
+            ListenableFuture<BaseResponse> response = futureStub.balance(baseRequest);
 
-            Futures.addCallback(response, new FutureCallback<BalanceResponse>() {
+            Futures.addCallback(response, new FutureCallback<BaseResponse>() {
                 @Override
-                public void onSuccess(BalanceResponse result) {
-                    logger.info("Balance Checked for user:{} Amount:{}", userID, Client.buildGetBalanceLogLine(result));
-                    clientResponse.setExecutionStatus(STATUS.SUCCESS);
-                    clientResponse.setBalanceResponse(result);
-                    latch.countDown();
-
+                public void onSuccess(BaseResponse result) {
+                    logger.info(STATUS.TRANSACTION_SUCCESS.name());
                 }
 
                 @Override
                 public void onFailure(Throwable t) {
                     logger.warn(Status.fromThrowable(t).getDescription());
-                    latch.countDown();
-
                 }
-            });
-            return clientResponse;
+            }, taskExecutor);
+            return response;
 
         }
     };
 
-    public abstract ClientResponse doTransact(final WalletServiceFutureStub futureStub, final Long userID,
-            final BigDecimal amount, final CURRENCY currency, final String stats);
+    public abstract ListenableFuture<BaseResponse> doTransact(final WalletServiceFutureStub futureStub,
+            final BaseRequest baseRequest, TaskExecutor taskExecutor);
 
     private static final Logger logger = LoggerFactory.getLogger(TRANSACTION.class);
 

@@ -1,7 +1,6 @@
 package com.bp.wallet.server.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,16 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.bp.wallet.proto.Balance;
-import com.bp.wallet.proto.BalanceRequest;
-import com.bp.wallet.proto.BalanceResponse;
+import com.bp.wallet.proto.BaseRequest;
+import com.bp.wallet.proto.BaseResponse;
 import com.bp.wallet.proto.CURRENCY;
-import com.bp.wallet.proto.DepositRequest;
-import com.bp.wallet.proto.DepositResponse;
+import com.bp.wallet.proto.STATUS;
 import com.bp.wallet.proto.StatusMessage;
 import com.bp.wallet.proto.WalletServiceGrpc;
-import com.bp.wallet.proto.WithdrawRequest;
-import com.bp.wallet.proto.WithdrawResponse;
 import com.bp.wallet.server.enity.Wallet;
 import com.bp.wallet.server.enity.WalletPK;
 import com.bp.wallet.server.exception.BPServiceException;
@@ -40,9 +35,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
     private WalletRepository walletRepository;
 
     @Override
-    // @Retryable(value = { Exception.class,
-    // HibernateOptimisticLockingFailureException.class }, maxAttempts = 1, backoff = @Backoff(delay = 5000))
-    public void deposit(final DepositRequest request, final StreamObserver<DepositResponse> responseObserver) {
+    public void deposit(final BaseRequest request, final StreamObserver<BaseResponse> responseObserver) {
         final BigDecimal balanceToADD = get(request.getAmount());
         try {
             if (checkAmountGreaterThanZero(balanceToADD) && checkCurrency(request.getCurrency())) {
@@ -58,10 +51,9 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
                     walletRepository.saveAndFlush(
                             new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), (balanceToADD)));
                 }
-                responseObserver.onNext(DepositResponse.newBuilder().setUserID(request.getUserID()).build());
+                responseObserver.onNext(BaseResponse.newBuilder().setStatus(STATUS.TRANSACTION_SUCCESS).build());
                 responseObserver.onCompleted();
                 logger.info("Wallet Updated SuccessFully");
-
             } else {
                 logger.warn(StatusMessage.AMOUNT_SHOULD_BE_GREATER_THAN_ZERO.name() + "OR"
                         + StatusMessage.INVALID_CURRENCY.name());
@@ -76,7 +68,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
     }
 
     @Override
-    public void withdraw(final WithdrawRequest request, final StreamObserver<WithdrawResponse> responseObserver) {
+    public void withdraw(final BaseRequest request, final StreamObserver<BaseResponse> responseObserver) {
 
         logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
                 request.getCurrency());
@@ -89,7 +81,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
                 if (wallet.get().getBalance().compareTo(balanceToWithdraw) >= 0) {
                     walletRepository.updateBalance(wallet.get().getBalance().subtract(balanceToWithdraw),
                             request.getUserID(), request.getCurrency());
-                    responseObserver.onNext(WithdrawResponse.newBuilder().build());
+                    responseObserver.onNext(BaseResponse.newBuilder().setStatus(STATUS.TRANSACTION_SUCCESS).build());
                     responseObserver.onCompleted();
                     logger.info("Wallet Updated SuccessFully");
 
@@ -110,21 +102,17 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
     }
 
     @Override
-    public void balance(final BalanceRequest request, final StreamObserver<BalanceResponse> responseObserver) {
+    public void balance(final BaseRequest request, final StreamObserver<BaseResponse> responseObserver) {
         logger.info("Request Recieved for UserID:{}", request.getUserID());
         try {
             List<Wallet> userWallets = walletRepository.findByWalletPK_UserID(request.getUserID());
-            List<Balance> balanceList = new ArrayList<>();
-
             final StringBuilder balance = new StringBuilder();
             userWallets.forEach(wallet -> {
-                Balance bl = Balance.newBuilder().setAmount(wallet.getBalance().toPlainString())
-                        .setCurrency(wallet.getWalletPK().getCurrency()).build();
                 balance.append(wallet.getWalletPK().getCurrency() + ":" + wallet.getBalance());
-                balanceList.add(bl);
             });
             logger.info(balance.toString());
-            responseObserver.onNext(BalanceResponse.newBuilder().addAllRemainingBalance(balanceList).build());
+            responseObserver.onNext(BaseResponse.newBuilder().setStatusMessage(balance.toString())
+                    .setStatus((STATUS.TRANSACTION_SUCCESS)).build());
             responseObserver.onCompleted();
         } catch (BPServiceException e) {
             logger.warn(StatusMessage.USER_DOES_NOT_EXIST.name());

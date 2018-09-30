@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableRetry
-public class GRPCServerApplication {
+public class BPServerApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(GRPCServerApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(BPServerApplication.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(GRPCServerApplication.class, args);
+        SpringApplication.run(BPServerApplication.class, args);
     }
 }

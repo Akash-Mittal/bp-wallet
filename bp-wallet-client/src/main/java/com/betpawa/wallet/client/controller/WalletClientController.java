@@ -7,19 +7,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.betpawa.wallet.client.dto.WalletClientRequest;
-import com.betpawa.wallet.client.dto.WalletClientResponse;
 import com.betpawa.wallet.client.service.WalletClientService;
 
 @RestController
 @RequestMapping("/")
 public class WalletClientController {
 
-	@Autowired
-	private WalletClientService walletClientService;
+    @Autowired
+    private WalletClientService walletClientService;
 
-	@PostMapping
-	public WalletClientResponse printMessage(@RequestBody WalletClientRequest walletClientRequest)
-			throws InterruptedException {
-		return walletClientService.execute(walletClientRequest);
-	}
+    @PostMapping
+    public void execute(@RequestBody WalletClientRequest walletClientRequest) throws InterruptedException {
+        walletClientService.execute(walletClientRequest);
+    }
 }

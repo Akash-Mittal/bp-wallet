@@ -6,72 +6,25 @@ option java_outer_classname = "WalletClass";
 option objc_class_prefix = "WC";
 
 service WalletService {
-  rpc deposit(DepositRequest) returns (DepositResponse) {}
-  rpc withdraw(WithdrawRequest) returns (WithdrawResponse) {}
-  rpc balance(BalanceRequest) returns (BalanceResponse) {}
+  rpc deposit(BaseRequest) returns (BaseResponse) {}
+  rpc withdraw(BaseRequest) returns (BaseResponse) {}
+  rpc balance(BaseRequest) returns (BaseResponse) {}
 }
 
-
- enum StatusCode{
- BP_WALLET_000 = 0;
- BP_WALLET_001 = 1;
- BP_WALLET_002 = 2;
- BP_WALLET_003 =3;
- }
-
- enum StatusMessage{
- USER_DOES_NOT_EXIST = 0;
- INVALID_ARGUMENTS = 1;
- INSUFFICIENT_BALANCE = 2;
- AMOUNT_SHOULD_BE_GREATER_THAN_ZERO = 3;
- INVALID_CURRENCY = 4;
- }
- 
+enum STATUS {
+TRANSACTION_SUCCESS = 0;
+TRANSACTION_FAILED =1;
+}
  
 message BaseResponse{
- StatusCode statusCode= 1;
- StatusMessage statusMessage = 2;
+STATUS status = 1;
+string statusMessage = 2;
 }
 
-
-message DepositRequest {
+message BaseRequest {
   int64 userID = 1;
   string amount = 2;
   CURRENCY currency = 3;	
-}
-
-message DepositResponse{
-  int64 userID = 1;
-  string amount = 2;
-  CURRENCY currency = 3;	
-}
-
-
-message WithdrawRequest  {
-  int64 userID = 1;
-  string amount = 2;
-  CURRENCY currency = 3;	
-}
-
-
-
-message WithdrawResponse {
-  string  balance = 1;
-  CURRENCY currency = 2;	
-}
-
-message BalanceRequest  {
-  int64 userID = 1;
-}
-
-
-message BalanceResponse {
- repeated Balance remainingBalance = 1;
-}
-
-message Balance {
-  string amount = 1;
-  CURRENCY currency = 2;	
 }
 
 
@@ -79,9 +32,12 @@ enum CURRENCY {
 USD = 0;
 EUR =1;
 GBP = 2;
-
 }
 
-message Empty {
-
-}
+enum StatusMessage{
+ USER_DOES_NOT_EXIST = 0;
+ INVALID_ARGUMENTS = 1;
+ INSUFFICIENT_BALANCE = 2;
+ AMOUNT_SHOULD_BE_GREATER_THAN_ZERO = 3;
+ INVALID_CURRENCY = 4;
+ }
