@@ -18,6 +18,7 @@ public class WalletClientController {
 
     @PostMapping
     public void execute(@RequestBody WalletClientRequest walletClientRequest) throws InterruptedException {
-        walletClientService.execute(walletClientRequest);
+        // walletClientService.execute(walletClientRequest);
+        walletClientService.runRounds(walletClientRequest);
     }
 }

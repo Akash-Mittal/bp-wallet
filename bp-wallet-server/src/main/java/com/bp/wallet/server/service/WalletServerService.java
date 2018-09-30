@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.bp.wallet.proto.BaseRequest;
@@ -27,7 +26,7 @@ import io.grpc.stub.StreamObserver;
 import net.devh.springboot.autoconfigure.grpc.server.GrpcService;
 
 @GrpcService(WalletServiceGrpc.class)
-@Transactional(isolation = Isolation.READ_UNCOMMITTED)
+@Transactional
 public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase {
 
     private static final Logger logger = LoggerFactory.getLogger(WalletServerService.class);
@@ -36,8 +35,9 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 
     @Override
     public void deposit(final BaseRequest request, final StreamObserver<BaseResponse> responseObserver) {
-        final BigDecimal balanceToADD = get(request.getAmount());
+
         try {
+            final BigDecimal balanceToADD = get(request.getAmount());
             if (checkAmountGreaterThanZero(balanceToADD) && checkCurrency(request.getCurrency())) {
                 logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
                         request.getCurrency());
@@ -48,8 +48,8 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
                     walletRepository.updateBalance(wallet.get().getBalance().add(balanceToADD), request.getUserID(),
                             request.getCurrency());
                 } else {
-                    walletRepository.saveAndFlush(
-                            new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), (balanceToADD)));
+                    walletRepository
+                            .save(new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), (balanceToADD)));
                 }
                 responseObserver.onNext(BaseResponse.newBuilder().setStatus(STATUS.TRANSACTION_SUCCESS).build());
                 responseObserver.onCompleted();

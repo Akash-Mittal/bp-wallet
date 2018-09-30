@@ -12,6 +12,12 @@ spring:
     username: root
     password: mypassword
     driverClassName: org.h2.Driver
+    hikari:
+      idle-timeout: 30000
+      connectionTimeout: 1000
+      maximum-pool-size: 100
+      pool-name: bpServerConnectionPool
+      auto-commit: false
   h2:
     console:
       enabled: true

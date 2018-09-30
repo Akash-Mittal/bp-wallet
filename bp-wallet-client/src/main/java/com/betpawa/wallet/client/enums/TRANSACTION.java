@@ -19,10 +19,9 @@ public enum TRANSACTION {
     DEPOSIT {
         @Override
         public ListenableFuture<BaseResponse> doTransact(final WalletServiceFutureStub futureStub,
-                final BaseRequest baseRequest, TaskExecutor taskExecutor) {
+                final BaseRequest baseRequest, final TaskExecutor taskExecutor) {
 
             ListenableFuture<BaseResponse> response = futureStub.deposit(baseRequest);
-
             Futures.addCallback(response, new FutureCallback<BaseResponse>() {
                 @Override
                 public void onSuccess(BaseResponse result) {
@@ -41,7 +40,7 @@ public enum TRANSACTION {
     WITHDRAW {
         @Override
         public ListenableFuture<BaseResponse> doTransact(final WalletServiceFutureStub futureStub,
-                final BaseRequest baseRequest, TaskExecutor taskExecutor) {
+                final BaseRequest baseRequest, final TaskExecutor taskExecutor) {
             ListenableFuture<BaseResponse> response = futureStub.withdraw(baseRequest);
 
             Futures.addCallback(response, new FutureCallback<BaseResponse>() {
@@ -53,8 +52,6 @@ public enum TRANSACTION {
                 @Override
                 public void onFailure(Throwable t) {
                     logger.warn(Status.fromThrowable(t).getDescription());
-                    // latch.countDown();
-
                 }
             }, taskExecutor);
             return response;
@@ -64,7 +61,7 @@ public enum TRANSACTION {
     BALANCE {
         @Override
         public ListenableFuture<BaseResponse> doTransact(final WalletServiceFutureStub futureStub,
-                final BaseRequest baseRequest, TaskExecutor taskExecutor) {
+                final BaseRequest baseRequest, final TaskExecutor taskExecutor) {
             ListenableFuture<BaseResponse> response = futureStub.balance(baseRequest);
 
             Futures.addCallback(response, new FutureCallback<BaseResponse>() {
@@ -84,7 +81,7 @@ public enum TRANSACTION {
     };
 
     public abstract ListenableFuture<BaseResponse> doTransact(final WalletServiceFutureStub futureStub,
-            final BaseRequest baseRequest, TaskExecutor taskExecutor);
+            final BaseRequest baseRequest, final TaskExecutor taskExecutor);
 
     private static final Logger logger = LoggerFactory.getLogger(TRANSACTION.class);
 
