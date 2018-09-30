@@ -1,6 +1,5 @@
 package com.bp.wallet.server.exception;
 
-import com.bp.wallet.proto.STATUS;
 import com.bp.wallet.proto.StatusMessage;
 
 import io.grpc.Metadata;
@@ -24,3 +23,4 @@ public class BPServiceException extends BPBaseException {
         super(status);
         // TODO Auto-generated constructor stub
     }
+}

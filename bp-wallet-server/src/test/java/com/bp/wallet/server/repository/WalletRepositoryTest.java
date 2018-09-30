@@ -48,8 +48,8 @@ public class WalletRepositoryTest {
 
     @Test
     public void testFindByUserID() {
-        List<Wallet> wallets = repository.findByWalletPK_UserID(100L);
-        assertThat(wallets).hasSize(3);
+        Optional<List<Wallet>> wallets = repository.findByWalletPK_UserID(100L);
+        assertThat(wallets.get()).hasSize(3);
     }
 
     @Test
