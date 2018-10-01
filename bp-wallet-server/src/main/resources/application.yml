@@ -1,6 +1,5 @@
 spring:
-  profiles: default 
-
+  profiles:
 
 ---
 
@@ -25,7 +24,7 @@ spring:
 ---
 
 spring:
-  profiles: dev
+  profiles: development
   application:
    name: bp-wallet-server
   datasource:
@@ -33,6 +32,12 @@ spring:
    username: root
    password: mypassword
    driver-class-name: com.mysql.cj.jdbc.Driver
+   hikari:
+    idle-timeout: 30000
+    connectionTimeout: 1000
+    maximum-pool-size: 100
+    pool-name: bpServerConnectionPool
+    auto-commit: false
   jpa:
    hibernate.ddl-auto: update
    generate-ddl: false

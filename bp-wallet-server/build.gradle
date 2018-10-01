@@ -26,6 +26,6 @@ buildscript {
 
 bootJar {
     baseName = 'bp-wallet-server'
-    version =  '0.1.0'
-    mainClassName = 'com.betpawa.wallet.client.BPWalletClientApplication'
+    version =  '1.0.0'
+    mainClassName = 'com.bp.wallet.server.BPWalletServerApplication'
 }
