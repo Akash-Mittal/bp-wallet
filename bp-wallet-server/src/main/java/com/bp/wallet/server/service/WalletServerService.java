@@ -53,12 +53,13 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 
             Optional<Wallet> wallet = walletRepository.findByWalletPK_UserIDAndWalletPK_Currency(request.getUserID(),
                     request.getCurrency());
+
             if (wallet.isPresent()) {
                 walletRepository.updateBalance(wallet.get().getBalance().add(balanceToADD), request.getUserID(),
                         request.getCurrency());
             } else {
-                walletRepository
-                        .save(new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), (balanceToADD)));
+                walletRepository.saveAndFlush(
+                        new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), balanceToADD));
             }
             responseObserver.onNext(BaseResponse.newBuilder().setStatus(STATUS.TRANSACTION_SUCCESS).build());
             responseObserver.onCompleted();
@@ -85,6 +86,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
             bpCurrencyValidator.checkCurrency(request.getCurrency());
             Optional<Wallet> wallet = walletRepository.findByWalletPK_UserIDAndWalletPK_Currency(request.getUserID(),
                     request.getCurrency());
+
             bpWalletValidator.validateWallet(wallet);
             bpAmountValidator.checkAmountLessThanBalance(wallet.get().getBalance(), balanceToWithdraw);
             walletRepository.updateBalance(wallet.get().getBalance().subtract(balanceToWithdraw), request.getUserID(),
