@@ -39,7 +39,7 @@ public class WalletClientService {
                         listenableFuture.get().getStatusMessage());
                 statusMap.get(STATUS.TRANSACTION_SUCCESS).incrementAndGet();
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                logger.error(e.getMessage());
                 statusMap.get(STATUS.TRANSACTION_FAILED).incrementAndGet();
             }
         });

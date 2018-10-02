@@ -6,7 +6,6 @@ import org.springframework.core.task.TaskExecutor;
 
 import com.bp.wallet.proto.BaseRequest;
 import com.bp.wallet.proto.BaseResponse;
-import com.bp.wallet.proto.STATUS;
 import com.bp.wallet.proto.WalletServiceGrpc.WalletServiceFutureStub;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -25,7 +24,7 @@ public enum TRANSACTION {
             Futures.addCallback(response, new FutureCallback<BaseResponse>() {
                 @Override
                 public void onSuccess(BaseResponse result) {
-                    logger.info(STATUS.TRANSACTION_SUCCESS.name());
+                    logger.info("{} {}", result.getStatus().name(), result.getStatusMessage());
                 }
 
                 @Override
@@ -46,7 +45,7 @@ public enum TRANSACTION {
             Futures.addCallback(response, new FutureCallback<BaseResponse>() {
                 @Override
                 public void onSuccess(BaseResponse result) {
-                    logger.info(STATUS.TRANSACTION_SUCCESS.name());
+                    logger.info("{} {}", result.getStatus().name(), result.getStatusMessage());
                 }
 
                 @Override
@@ -67,7 +66,7 @@ public enum TRANSACTION {
             Futures.addCallback(response, new FutureCallback<BaseResponse>() {
                 @Override
                 public void onSuccess(BaseResponse result) {
-                    logger.info(STATUS.TRANSACTION_SUCCESS.name());
+                    logger.info("{} {}", result.getStatus().name(), result.getStatusMessage());
                 }
 
                 @Override
