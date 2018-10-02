@@ -1,5 +1,7 @@
 # BP-Wallet
 
+![alt text](bp-wallet/docs/BP-Wallet-HLD.png "BP Wallet Design V1.0")
+
 ### Sub Projects 
 
 * bp-wallet-client(BPWC): Client Accecible Make Transaction Request via HTTP2 to server.
@@ -156,6 +158,9 @@ Application Variant : All below are 10 Concurrent Calls but they take different 
 * Authentication.
 * UI Client.
 * Caching enabled Entities - if needed.
+* DB Schema.
+
+	![alt text](bp-wallet/docs/BP-Wallet-Schema.png)
 
 ### Planned Features.[Implemented and Closed]
 
@@ -169,3 +174,6 @@ Application Variant : All below are 10 Concurrent Calls but they take different 
 * Server will be Dockerized.
 * Server Will Have peresistance `mysql` running in its own ```docker``` container.
 * Client Rest API should return the Status of Excution and Stats like ``` QPS```, ``` Failed RPCs ``` , ``` Sucess RPCs```
+
+
+
