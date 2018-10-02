@@ -15,7 +15,7 @@ spring:
       idle-timeout: 30000
       connectionTimeout: 1000
       maximum-pool-size: 100
-      pool-name: bpServerConnectionPool
+      pool-name: bpServerH2ConnectionPool
       auto-commit: false
   h2:
     console:
@@ -36,7 +36,7 @@ spring:
     idle-timeout: 30000
     connectionTimeout: 1000
     maximum-pool-size: 100
-    pool-name: bpServerConnectionPool
+    pool-name: bpServerMYSQLConnectionPool
     auto-commit: false
   jpa:
    hibernate.ddl-auto: update

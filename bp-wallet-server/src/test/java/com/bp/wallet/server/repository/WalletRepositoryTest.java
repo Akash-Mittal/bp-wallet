@@ -23,7 +23,6 @@ import com.bp.wallet.server.enity.WalletPK;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-
 public class WalletRepositoryTest {
 
     @Autowired
