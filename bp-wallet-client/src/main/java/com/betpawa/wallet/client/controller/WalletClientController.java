@@ -27,7 +27,7 @@ public class WalletClientController {
             throws InterruptedException {
         long time = System.currentTimeMillis();
         WalletClientResponse response = new WalletClientResponse.Builder()
-                .transactions(walletClientService.runRounds(walletClientRequest)).build();
+                .transactions(walletClientService.run(walletClientRequest)).build();
         long timeTaken = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - time);
         logger.info("Excecution done time taken: {} {}", timeTaken, TimeUnit.SECONDS.name());
         response.setTimeTaken(timeTaken);
