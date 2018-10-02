@@ -39,55 +39,55 @@
 
 #### Database
 
-	LOCAL 
+##### LOCAL 
 
-	If local/remote instance of MY SQL is running nothing else to do.
-	Replace the ```IP/PORT/SCHEMA``` in application.yaml in bp-wallet-server.
+If local/remote instance of MY SQL is running nothing else to do.
+Replace the `IP/PORT/SCHEMA` in `pplication.yaml` in `bp-wallet-server`
 
-	Dockerized 
-	
-	Script: start-bp-wallet-mysql-docker.bat 
-	
-	Run above in root folder it takes 5-10 Minutes on my machine.
+##### DOCKER
 
-	-> Please execute following command to get the IP of docker-machine.
-	bash#docker-machine -ip 
+Script: `start-bp-wallet-mysql-docker.bat `
 
-	Make Sure MYSQL or Any DB is UP and its properties are configured in ```application.yaml```
-	
-	Replace this URL Datasource with your IP in application.yaml in bp-wallet-server.
+Run above in root folder it takes 5-10 Minutes on my machine.
+
+-> Please execute following command to get the IP of docker-machine.
+`bash#docker-machine -ip `
+
+Make Sure MYSQL or Any DB is UP and its properties are configured in `application.yaml`
+
+Replace this URL Datasource with your IP in application.yaml in bp-wallet-server.
+
 
 #### JAVA(bp-wallet-server)
 
 
-	LOCAL 
+##### LOCAL 
 
-	Script: start-bp-wallet-server.bat (Please read the comments for more info.)
+Script: `start-bp-wallet-server.bat` (Please read the comments for more info.)
 
-	Dockerized 
+##### Docker
 	
-	Script: start-bp-wallet-docker.bat 
-	
+Script: `start-bp-wallet-docker.bat`
 	
 #### JAVA(bp-wallet-client)
 
-	LOCAL 
+##### LOCAL 
 
-	Script: start-bp-wallet-client.bat
+Script: `start-bp-wallet-client.bat`
 
-	Dockerized 
-	
-	Script: start-bp-wallet-docker.bat 
+##### Docker 
+
+Script: `start-bp-wallet-docker.bat`
 	
 ##### Access Client using 
 
-	LOCAL 
+###### LOCAL 
 
-	http://localhost:8080/swagger-ui.html#/
+http://localhost:8080/swagger-ui.html#/
 
-	Dockerized 
-	
-	http://<dockermachin -ip>:8080/swagger-ui.html#/
+##### Docker
+
+http://<dockermachin -ip>:8080/swagger-ui.html#/
 	
 	
 * Time Needed to start the Apps - 5 Minutes	
@@ -102,16 +102,16 @@
 ### Important choices in solution
 
 * The Whole Structure of the BP-wallet application is loosely coupled 
-* Each Client,Server,DB Instances are developed keeping Scalabality,Elasticity and Faultolerance in mind.
+* Each Client,Server,DB Instances are developed keeping Scalabality,Elasticity and Fault tolerance in mind.
 * Docker Instances make it possible to enable containerization and Helps in Deployments.
-* The Performance Tuning Options is not yet configurable. [Time Contraints]
+* The Performance Tuning Options is not yet configurable. [Time Constraints]
 * Server Side - Connection Pooling (That Depends on Given Deployment Platform)
 * Client Side - Task Executer is Configurable with Concurrent Worker Threads.
-* The bp-wallet-proto is shared with Client and Server.
-* Synchronization or any code level locking on DB tansaction as there can be multiple instances running.
+* The `bp-wallet-proto` is shared with Client and Server.
+* Synchronization or any code level locking on DB transaction as there can be multiple instances running.
 * Optimistic Locking is implemented (Which can also be configured for retry mechanism[Disabled for Now])
 * User Registration: User is registered if he is  non existent while making deposit this was necessary for testing.
-* Logging has been minimized via debug for improved performace.
+* Logging has been minimized via debug for improved performance.
 
 ### Transactions Per Seconds.
 
@@ -119,27 +119,27 @@ This is a difficult question as there are many scenarios, and requires performan
 
 #### Per Transaction:
 
-	Application Variant : All below are 10 Concurrent Calls but they take different execution time couase of their nature.
+Application Variant : All below are 10 Concurrent Calls but they take different execution time because of their nature.
 
-	Single user Making 10 Deposit - 
-	Single user Making 5 Withdraws 5 Deposit
-	Single user Making 4 Withdraws 4 Deposit 2 Balance
+* Single user Making 10 Deposit:
+* Single user Making 5 Withdraws 5 Deposit:
+* Single user Making 4 Withdraws 4 Deposit 2 Balance:
 
 #### Database Variant:
 	
-	Embedded H2 DB.
-	MYSQL DB.
-	Dockerized MYSQL DB.
-	Over the Cloud.
+* Embedded H2 DB:
+* MYSQL DB:
+* Dockerized MYSQL DB:
+* Over the Cloud:
 	
 #### Database Connection Pooling Variant:
 	
-	HIKARI:
-	Apache:
+* HIKARI:
+* Apache:
 	
 #### Platform Variant:
-	Wallet Server Deployed Local Machine -(4 GB RAM 4 Cores i5)
-	Wallet Server Deployed on Cloud 
+* Wallet Server Deployed Local Machine -(4 GB RAM 4 Cores i5):
+* Wallet Server Deployed on other Machines:
 
 ### Deduction:
 
@@ -149,6 +149,7 @@ This is a difficult question as there are many scenarios, and requires performan
 * Total Number of threads will K x M x N (X Transaction Per Round avg 8)
 
 ### Future Aspirations.
+
 * Cloud Ready.
 * Load Balancer.
 * Service Discovery.
