@@ -22,10 +22,126 @@ public enum ROUND {
                     futureStub, BaseRequest.newBuilder().setUserID(userID)
                             .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
                     taskExecuter));
+            list.add(TRANSACTION.WITHDRAW.doTransact(futureStub, BaseRequest.newBuilder().setUserID(userID)
+                    .setAmount(AMOUNT.TWOHUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.DEPOSIT.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.EUR).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
+                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
+                    taskExecuter));
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
+                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+                    taskExecuter));
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
+                    taskExecuter));
+
+            return list;
+        }
+
+    },
+    B {
+
+        @Override
+        public List<ListenableFuture<BaseResponse>> goExecute(final WalletServiceFutureStub futureStub,
+                final Long userID, final TaskExecutor taskExecuter) {
+            List<ListenableFuture<BaseResponse>> list = new ArrayList<>();
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.GBP).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.DEPOSIT.doTransact(futureStub,
+                    BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.THREEHUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.GBP)
+                            .build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.GBP).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.GBP).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.GBP).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.GBP).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.GBP).build(),
+                    taskExecuter));
+
+            return list;
+        }
+
+    },
+    C {
+
+        @Override
+        public List<ListenableFuture<BaseResponse>> goExecute(final WalletServiceFutureStub futureStub,
+                final Long userID, final TaskExecutor taskExecuter) {
+            List<ListenableFuture<BaseResponse>> list = new ArrayList<>();
+
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
+                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+                    taskExecuter));
+
             list.add(TRANSACTION.DEPOSIT.doTransact(
                     futureStub, BaseRequest.newBuilder().setUserID(userID)
                             .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
                     taskExecuter));
+
+            list.add(TRANSACTION.DEPOSIT.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.DEPOSIT.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
+                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.WITHDRAW.doTransact(
+                    futureStub, BaseRequest.newBuilder().setUserID(userID)
+                            .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
+                    taskExecuter));
+
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
+                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+                    taskExecuter));
+
             return list;
         }
 
