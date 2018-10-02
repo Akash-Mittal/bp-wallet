@@ -2,7 +2,7 @@
 
 ### Sub Projects 
 
-* bp-wallet-client(BPWC): Client Accecible Make Transaction Request via HTTP2 to server.
+* bp-wallet-client(BPWC): Client Accessible Make Transaction Request via HTTP2 to server.
 * bp-wallet-server(BPWS): Keeps a record user Wallet and Balance 
 * bp-wallet-proto(BPWP): Has  proto file and Generated Stubs and Domains shared by BPWC and BPWS.
 
@@ -42,7 +42,7 @@
 ##### LOCAL 
 
 If local/remote instance of MY SQL is running nothing else to do.
-Replace the `IP/PORT/SCHEMA` in `pplication.yaml` in `bp-wallet-server`
+Replace the `IP/PORT/SCHEMA` in `application.yaml` in `bp-wallet-server`
 
 ##### DOCKER
 
@@ -55,7 +55,7 @@ Run above in root folder it takes 5-10 Minutes on my machine.
 
 Make Sure MYSQL or Any DB is UP and its properties are configured in `application.yaml`
 
-Replace this URL Datasource with your IP in application.yaml in bp-wallet-server.
+Replace this URL Data-source with your IP in application.yaml in bp-wallet-server.
 
 
 #### JAVA(bp-wallet-server)
@@ -87,7 +87,7 @@ http://localhost:8080/swagger-ui.html#/
 
 ##### Docker
 
-http://<dockermachin -ip>:8080/swagger-ui.html#/
+http://<dockermachine -ip>:8080/swagger-ui.html#/
 	
 	
 * Time Needed to start the Apps - 5 Minutes	
@@ -102,7 +102,7 @@ http://<dockermachin -ip>:8080/swagger-ui.html#/
 ### Important choices in solution
 
 * The Whole Structure of the BP-wallet application is loosely coupled 
-* Each Client,Server,DB Instances are developed keeping Scalabality,Elasticity and Fault tolerance in mind.
+* Each Client,Server,DB Instances are developed keeping Scalability,Elasticity and Fault tolerance in mind.
 * Docker Instances make it possible to enable containerization and Helps in Deployments.
 * The Performance Tuning Options is not yet configurable. [Time Constraints]
 * Server Side - Connection Pooling (That Depends on Given Deployment Platform)
@@ -159,13 +159,12 @@ Application Variant : All below are 10 Concurrent Calls but they take different 
 
 ### Planned Features.[Implemented and Closed]
 
-* The Proto Generation need to be done in a Seperate Project.
+* The Proto Generation need to be done in a Separate Project.
 * Although Client Should be able to generate its own stub from 
-``` .proto ```   file , for the sake of  Loose Coupling Client and Server Need to add in proto proejct in   
-``` build.gradle ```
+`.proto `   file , for the sake of  Loose Coupling Client and Server Need to add in proto project in ` build.gradle `
 
 * The Server and Client are both based on Spring boot and uses grpc wrapper of spring boot that supports ` GrpcClient` and ` GrpcServer ` annotations.
 * The Server will not expose Rest API's it will be called via ``` stub ``` 
 * Server will be Dockerized.
-* Server Will Have peresistance `mysql` running in its own ```docker``` container.
-* Client Rest API should return the Status of Excution and Stats like ``` QPS```, ``` Failed RPCs ``` , ``` Sucess RPCs```
+* Server Will Have persistence `mysql` running in its own ```docker``` container.
+* Client Rest API should return the Status of Execution and Stats like ``` QPS```, ``` Failed RPCs ``` , ``` Sucess RPCs```
