@@ -105,6 +105,7 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
     }
 
     @Override
+    @Transactional(readOnly = true)
     public void balance(final BaseRequest request, final StreamObserver<BaseResponse> responseObserver) {
         logger.info("Request Recieved for UserID:{}", request.getUserID());
         try {
