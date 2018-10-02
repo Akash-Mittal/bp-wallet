@@ -31,16 +31,14 @@ public enum ROUND {
                             .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.EUR).build(),
                     taskExecuter));
 
-            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
-                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub, BaseRequest.newBuilder().setUserID(userID).build(),
                     taskExecuter));
 
             list.add(TRANSACTION.WITHDRAW.doTransact(
                     futureStub, BaseRequest.newBuilder().setUserID(userID)
                             .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
                     taskExecuter));
-            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
-                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub, BaseRequest.newBuilder().setUserID(userID).build(),
                     taskExecuter));
             list.add(TRANSACTION.WITHDRAW.doTransact(
                     futureStub, BaseRequest.newBuilder().setUserID(userID)
@@ -105,8 +103,7 @@ public enum ROUND {
                 final Long userID, final TaskExecutor taskExecuter) {
             List<ListenableFuture<BaseResponse>> list = new ArrayList<>();
 
-            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
-                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub, BaseRequest.newBuilder().setUserID(userID).build(),
                     taskExecuter));
 
             list.add(TRANSACTION.DEPOSIT.doTransact(
@@ -129,8 +126,7 @@ public enum ROUND {
                             .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
                     taskExecuter));
 
-            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
-                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub, BaseRequest.newBuilder().setUserID(userID).build(),
                     taskExecuter));
 
             list.add(TRANSACTION.WITHDRAW.doTransact(
@@ -138,8 +134,7 @@ public enum ROUND {
                             .setAmount(AMOUNT.HUNDERED.getAmount().toPlainString()).setCurrency(CURRENCY.USD).build(),
                     taskExecuter));
 
-            list.add(TRANSACTION.BALANCE.doTransact(futureStub,
-                    BaseRequest.newBuilder().setUserID(userID).setAmount(null).setCurrency(null).build(),
+            list.add(TRANSACTION.BALANCE.doTransact(futureStub, BaseRequest.newBuilder().setUserID(userID).build(),
                     taskExecuter));
 
             return list;
