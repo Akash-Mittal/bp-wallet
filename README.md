@@ -1,6 +1,6 @@
 # BP-Wallet
 
-![alt text](bp-wallet/docs/BP-Wallet-HLD.png "BP Wallet Design V1.0")
+ ![bp-wallet-hld](https://user-images.githubusercontent.com/2044872/46343424-46fb5480-c65b-11e8-89e2-84bcb08c44ca.png)
 
 ### Sub Projects 
 
@@ -159,8 +159,10 @@ Application Variant : All below are 10 Concurrent Calls but they take different 
 * UI Client.
 * Caching enabled Entities - if needed.
 * DB Schema.
+  * Schema File - https://github.com/Akash-Mittal/bp-wallet/blob/master/docs/db-schema.sql
 
-	![alt text](bp-wallet/docs/BP-Wallet-Schema.png)
+![bp-wallet-schema](https://user-images.githubusercontent.com/2044872/46343515-9fcaed00-c65b-11e8-88d1-a9ef37b8c6a3.png)
+
 
 ### Planned Features.[Implemented and Closed]
 
