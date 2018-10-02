@@ -1,5 +1,7 @@
 # BP-Wallet
 
+ ![bp-wallet-hld](https://user-images.githubusercontent.com/2044872/46343424-46fb5480-c65b-11e8-89e2-84bcb08c44ca.png)
+
 ### Sub Projects 
 
 * bp-wallet-client(BPWC): Client Accessible Make Transaction Request via HTTP2 to server.
@@ -156,6 +158,11 @@ Application Variant : All below are 10 Concurrent Calls but they take different 
 * Authentication.
 * UI Client.
 * Caching enabled Entities - if needed.
+* DB Schema.
+  * Schema File - https://github.com/Akash-Mittal/bp-wallet/blob/master/docs/db-schema.sql
+
+![bp-wallet-schema](https://user-images.githubusercontent.com/2044872/46343515-9fcaed00-c65b-11e8-88d1-a9ef37b8c6a3.png)
+
 
 ### Planned Features.[Implemented and Closed]
 
@@ -166,5 +173,3 @@ Application Variant : All below are 10 Concurrent Calls but they take different 
 * The Server and Client are both based on Spring boot and uses grpc wrapper of spring boot that supports ` GrpcClient` and ` GrpcServer ` annotations.
 * The Server will not expose Rest API's it will be called via ``` stub ``` 
 * Server will be Dockerized.
-* Server Will Have persistence `mysql` running in its own ```docker``` container.
-* Client Rest API should return the Status of Execution and Stats like ``` QPS```, ``` Failed RPCs ``` , ``` Sucess RPCs```
