@@ -94,6 +94,29 @@ http://<dockermachine -ip>:8080/swagger-ui.html#/
 	* Time Needed to start the Apps - 5-10 Minutes With Some configuration Changes (Docker(bp-wallet-mysql) + JAVA(bp-wallet-client) + JAVA(bp-wallet-server)) OR ((bp-wallet-mysql) + JAVA(bp-wallet-client) + JAVA(bp-wallet-server))
 	* Time Needed to start the Apps -5-10 Minutes With Some configuration Changes (Docker(bp-wallet-mysql) + Docker(bp-wallet-client) + Docker(bp-wallet-server))
 
+### Request Input
+`
+{
+  "transactions": {
+    "TRANSACTION_SUCCESS": 1,
+    "TRANSACTION_FAILED": 6
+  },
+  "timeTaken": 0
+}
+
+`
+### Request Output
+`
+{
+  "transactions": {
+    "TRANSACTION_SUCCESS": 1,
+    "TRANSACTION_FAILED": 6
+  },
+  "timeTaken": 0
+}
+
+`
+
 
 ### Important choices in Solution
 
