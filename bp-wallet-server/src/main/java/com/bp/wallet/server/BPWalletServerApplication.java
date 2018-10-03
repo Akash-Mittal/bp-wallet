@@ -35,8 +35,8 @@ public class BPWalletServerApplication {
 	public CommandLineRunner buildData() {
 		return (args) -> {
 			for (long i = 1; i <= 9999; i++) {
-				for (int j = 0; j < CURRENCY.values().length; j++) {
-					repository.save(new Wallet(new WalletPK(i, CURRENCY.values()[j]), BigDecimal.ZERO));
+				for (int j = 0; j < CURRENCY.values().length - 1; j++) {
+					repository.save(new Wallet(new WalletPK(i, CURRENCY.forNumber(j)), BigDecimal.ZERO));
 				}
 			}
 			log.info("Initialize DB with {} users ", 9999);
