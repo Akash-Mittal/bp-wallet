@@ -15,7 +15,6 @@ import com.bp.wallet.proto.STATUS;
 import com.bp.wallet.proto.WalletServiceGrpc;
 import com.bp.wallet.server.dto.BalanceResponseDTO;
 import com.bp.wallet.server.enity.Wallet;
-import com.bp.wallet.server.enity.WalletPK;
 import com.bp.wallet.server.exception.BPValidationException;
 import com.bp.wallet.server.repository.WalletRepository;
 import com.bp.wallet.server.validation.BPAmountValidator;
@@ -31,8 +30,6 @@ import net.devh.springboot.autoconfigure.grpc.server.GrpcService;
 @Transactional
 public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase {
 
-	private static final String COMMA = ",";
-	private static final String COLON = ":";
 	private static final Logger logger = LoggerFactory.getLogger(WalletServerService.class);
 	@Autowired
 	private WalletRepository walletRepository;
@@ -51,26 +48,14 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 	@Override
 	public void deposit(final BaseRequest request, final StreamObserver<BaseResponse> responseObserver) {
 		try {
-			bpAmountValidator.validate(request.getAmount());
-			bpCurrencyValidator.checkCurrency(request.getCurrency());
+			validateRequest(request);
 			final BigDecimal balanceToADD = get(request.getAmount());
 			logger.info("Request Recieved for UserID:{} For Amount:{}{} ", request.getUserID(), request.getAmount(),
 					request.getCurrency());
-
-			Optional<Wallet> wallet = walletRepository.getUserWalletsByCurrencyAndUserID(request.getUserID(),
-					request.getCurrency());
-
-			if (wallet.isPresent()) {
-				walletRepository.updateBalance(wallet.get().getBalance().add(balanceToADD), request.getUserID(),
-						request.getCurrency());
-			} else {
-				walletRepository.saveAndFlush(
-						new Wallet(new WalletPK(request.getUserID(), request.getCurrency()), balanceToADD));
-			}
-			responseObserver.onNext(BaseResponse.newBuilder().setStatus(STATUS.TRANSACTION_SUCCESS).build());
-			responseObserver.onCompleted();
+			Optional<Wallet> wallet = getUserWallet(request);
+			updateWallet(request, balanceToADD, wallet);
+			successResponse(responseObserver);
 			logger.info("Wallet Updated SuccessFully");
-
 		} catch (BPValidationException e) {
 			logger.error(e.getErrorStatus().name());
 			responseObserver
@@ -88,18 +73,11 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 				request.getCurrency());
 		try {
 			final BigDecimal balanceToWithdraw = get(request.getAmount());
-			bpAmountValidator.validate(request.getAmount());
-			bpCurrencyValidator.checkCurrency(request.getCurrency());
-			Optional<Wallet> wallet = walletRepository.getUserWalletsByCurrencyAndUserID(request.getUserID(),
-					request.getCurrency());
-
-			bpWalletValidator.validateWallet(wallet);
-			bpAmountValidator.checkAmountLessThanBalance(wallet.get().getBalance(), balanceToWithdraw);
-			walletRepository.updateBalance(wallet.get().getBalance().subtract(balanceToWithdraw), request.getUserID(),
-					request.getCurrency());
-			responseObserver.onNext(BaseResponse.newBuilder().setStatus(STATUS.TRANSACTION_SUCCESS).build());
-			responseObserver.onCompleted();
-			logger.info("Wallet Updated SuccessFully");
+			validateRequest(request);
+			Optional<Wallet> wallet = getUserWallet(request);
+			validateWithDrawRequest(balanceToWithdraw, wallet);
+			updateWallet(request, wallet.get().getBalance().subtract(balanceToWithdraw), wallet);
+			successResponse(responseObserver);
 		} catch (BPValidationException e) {
 			logger.error(e.getErrorStatus().name());
 			responseObserver
@@ -136,4 +114,34 @@ public class WalletServerService extends WalletServiceGrpc.WalletServiceImplBase
 	private BigDecimal get(final String val) {
 		return new BigDecimal(val);
 	}
+
+	private void validateRequest(final BaseRequest request) {
+		bpAmountValidator.validate(request.getAmount());
+		bpCurrencyValidator.checkCurrency(request.getCurrency());
+	}
+
+	private void successResponse(final StreamObserver<BaseResponse> responseObserver) {
+		responseObserver.onNext(BaseResponse.newBuilder().setStatus(STATUS.TRANSACTION_SUCCESS).build());
+		responseObserver.onCompleted();
+
+	}
+
+	private Optional<Wallet> getUserWallet(final BaseRequest request) {
+		Optional<Wallet> wallet = walletRepository.getUserWalletsByCurrencyAndUserID(request.getUserID(),
+				request.getCurrency());
+		return wallet;
+	}
+
+	private void updateWallet(final BaseRequest request, final BigDecimal balanceToADD, final Optional<Wallet> wallet) {
+		if (wallet.isPresent()) {
+			walletRepository.updateBalance(wallet.get().getBalance().add(balanceToADD), request.getUserID(),
+					request.getCurrency());
+		}
+	}
+
+	private void validateWithDrawRequest(final BigDecimal balanceToWithdraw, Optional<Wallet> wallet) {
+		bpWalletValidator.validateWallet(wallet);
+		bpAmountValidator.checkAmountLessThanBalance(wallet.get().getBalance(), balanceToWithdraw);
+	}
+
 }

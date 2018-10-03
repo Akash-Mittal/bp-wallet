@@ -42,7 +42,7 @@ public class WalletRepositoryTest {
 	@Test
 	public void testSetupWithFindAll() {
 		List<Wallet> wallets = repository.findAll();
-		assertThat(wallets).hasSize(300);
+		assertThat(wallets).hasSize(30);
 	}
 
 	@Test
