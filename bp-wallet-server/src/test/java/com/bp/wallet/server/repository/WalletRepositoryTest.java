@@ -25,35 +25,44 @@ import com.bp.wallet.server.enity.WalletPK;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public class WalletRepositoryTest {
 
-    @Autowired
-    private WalletRepository repository;
+	@Autowired
+	private WalletRepository repository;
 
-    @Before
-    public void setUp() throws Exception {
-        repository.deleteAll();
-        Random random = new Random(123L);
-        for (Long userID = 100L; userID < 200; userID++) {
-            repository.save(new Wallet(new WalletPK(userID, CURRENCY.EUR), BigDecimal.valueOf(random.nextInt(3213))));
-            repository.save(new Wallet(new WalletPK(userID, CURRENCY.USD), BigDecimal.valueOf(random.nextInt(3213))));
-            repository.save(new Wallet(new WalletPK(userID, CURRENCY.GBP), BigDecimal.valueOf(random.nextInt(3213))));
-        }
-    }
+	@Before
+	public void setUp() throws Exception {
+		repository.deleteAll();
+		Random random = new Random(123L);
+		for (Long userID = 100L; userID < 110; userID++) {
+			repository.save(new Wallet(new WalletPK(userID, CURRENCY.EUR), BigDecimal.valueOf(random.nextInt(3213))));
+			repository.save(new Wallet(new WalletPK(userID, CURRENCY.USD), BigDecimal.valueOf(random.nextInt(3213))));
+			repository.save(new Wallet(new WalletPK(userID, CURRENCY.GBP), BigDecimal.ZERO));
+		}
+	}
 
-    @Test
-    public void testSetupWithFindAll() {
-        List<Wallet> wallets = repository.findAll();
-        assertThat(wallets).hasSize(300);
-    }
+	@Test
+	public void testSetupWithFindAll() {
+		List<Wallet> wallets = repository.findAll();
+		assertThat(wallets).hasSize(300);
+	}
 
-    @Test
-    public void testFindByUserID() {
-        Optional<List<Wallet>> wallets = repository.findByWalletPK_UserID(100L);
-        assertThat(wallets.get()).hasSize(3);
-    }
+	@Test
+	public void testFindByUserID() {
+		Optional<List<Wallet>> wallets = repository.findByWalletPK_UserID(100L);
+		assertThat(wallets.get()).hasSize(3);
+	}
 
-    @Test
-    public void testFindByUserIDAndCurrency() {
-        Optional<Wallet> wallets = repository.findByWalletPK_UserIDAndWalletPK_Currency(100L, CURRENCY.EUR);
-        assertThat(wallets.get()).isNotNull();
-    }
+	@Test
+	public void testFindByUserIDAndCurrency() {
+		Optional<Wallet> wallets = repository.getUserWalletsByCurrencyAndUserID(100L, CURRENCY.EUR);
+		assertThat(wallets.get()).isNotNull();
+		assertThat(wallets.get().getWalletPK().getCurrency().name()).contains(CURRENCY.EUR.name());
+	}
+
+	@Test
+	public void testGetUserWalletsByCurrencyAndUserIDWhereBalanceIsGreaterThanZero() throws Exception {
+		Optional<Wallet> wallets = repository.getUserWalletsByCurrencyAndUserIDWhereBalanceIsGreaterThanZero(101L,
+				CURRENCY.GBP);
+		assertThat(wallets.isPresent()).isFalse();
+
+	}
 }

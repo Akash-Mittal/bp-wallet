@@ -16,13 +16,19 @@ import com.bp.wallet.server.enity.WalletPK;
 
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, WalletPK> {
-    Optional<List<Wallet>> findByWalletPK_UserID(Long userID);
+	Optional<List<Wallet>> findByWalletPK_UserID(Long userID);
 
-    Optional<Wallet> findByWalletPK_UserIDAndWalletPK_Currency(Long userID, CURRENCY currency);
+	@Query("select w from Wallet w where w.walletPK.userID =:userID and w.walletPK.currency=:currency")
+	Optional<Wallet> getUserWalletsByCurrencyAndUserID(@Param("userID") Long userID,
+			@Param("currency") CURRENCY currency);
 
-    @Modifying(clearAutomatically = true)
-    @Query("update Wallet wallet set wallet.balance =:newBalance where wallet.walletPK.userID =:userID and wallet.walletPK.currency=:currency")
-    void updateBalance(@Param("newBalance") BigDecimal newBalance, @Param("userID") Long userID,
-            @Param("currency") CURRENCY currency);
+	@Query("select w from Wallet w where w.walletPK.userID =:userID and w.walletPK.currency=:currency and w.balance  > 0")
+	Optional<Wallet> getUserWalletsByCurrencyAndUserIDWhereBalanceIsGreaterThanZero(@Param("userID") Long userID,
+			@Param("currency") CURRENCY currency);
+
+	@Modifying(clearAutomatically = true)
+	@Query("update Wallet wallet set wallet.balance =:newBalance where wallet.walletPK.userID =:userID and wallet.walletPK.currency=:currency")
+	void updateBalance(@Param("newBalance") BigDecimal newBalance, @Param("userID") Long userID,
+			@Param("currency") CURRENCY currency);
 
 }
