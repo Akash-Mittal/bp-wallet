@@ -1,4 +1,4 @@
-call gradlew.bat build -x test
+call gradle build -x test
 
 @rem ********** bp-wallet-server starts in default profile with H2 Instance.
 call java -jar bp-wallet-server\build\libs\bp-wallet-server-1.0.0.jar
