@@ -43,7 +43,7 @@ public class WalletClientService {
 				statusMap.get(STATUS.TRANSACTION_SUCCESS).incrementAndGet();
 			} catch (Exception e) {
 				logger.error(e.getMessage());
-				if (Status.fromThrowable(e).equals(Status.FAILED_PRECONDITION)) {
+				if (e.getMessage().contains((Status.FAILED_PRECONDITION.getCode().name().toString()))) {
 					statusMap.get(STATUS.TRANSACTION_SUCCESS).incrementAndGet();
 				} else {
 					statusMap.get(STATUS.TRANSACTION_FAILED).incrementAndGet();
